@@ -1,0 +1,51 @@
+﻿@model CMS.Data.Entities.Post
+
+<div class="container mt-5">
+
+    <div class="card shadow-lg border-0">
+
+        <!-- Ảnh bài viết -->
+        <img src="@Model.ImageUrl"
+             class="card-img-top"
+             alt="Thumbnail"
+             style="height:400px; object-fit:cover;" />
+
+        <div class="card-body p-4">
+
+            <!-- Tiêu đề -->
+            <h1 class="text-primary mb-3">
+                @Model.Title
+            </h1>
+
+            <!-- Ngày đăng -->
+            <p class="text-muted">
+                Ngày đăng:
+                @Model.CreatedDate.ToString("dd/MM/yyyy")
+            </p>
+
+            <hr />
+
+            <!-- Nội dung -->
+            <div class="mt-4" style="font-size:18px; line-height:1.8;">
+
+                @Model.Content
+
+            </div>
+
+            <!-- Nút quay lại -->
+            <div class="mt-4">
+
+                <a href="/Post/Index"
+                   class="btn btn-secondary">
+
+                    ← Quay lại danh sách
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

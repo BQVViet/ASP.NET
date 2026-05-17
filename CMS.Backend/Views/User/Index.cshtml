@@ -1,0 +1,90 @@
+﻿@model IEnumerable<CMS.Data.Entities.User>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h2 class="text-dark">
+            QUẢN LÝ THÀNH VIÊN
+        </h2>
+
+        <a href="/User/Create"
+           class="btn btn-success">
+
+            + Thêm thành viên mới
+
+        </a>
+
+    </div>
+
+    <table class="table table-hover shadow-sm border">
+
+        <thead class="table-dark">
+
+            <tr>
+                <th>ID</th>
+                <th>Tên Đăng Nhập</th>
+                <th>Họ Và Tên</th>
+                <th>Quyền Hạn</th>
+                <th>Thao Tác</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var user in Model)
+            {
+                <tr>
+
+                    <td>@user.Id</td>
+
+                    <td>
+                        <strong>@user.UserName</strong>
+                    </td>
+
+                    <td>@user.FullName</td>
+
+                    <td>
+
+                        @if (user.Role == "Administrator")
+                        {
+                            <span class="badge bg-danger">
+                                @user.Role
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-info text-dark">
+                                @user.Role
+                            </span>
+                        }
+
+                    </td>
+
+                    <td>
+
+                        <a href="/User/Edit/@user.Id"
+                           class="btn btn-warning btn-sm">
+
+                            Sửa
+
+                        </a>
+
+                        <a href="/User/Delete/@user.Id"
+                           class="btn btn-danger btn-sm">
+
+                            Xóa
+
+                        </a>
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+</div>

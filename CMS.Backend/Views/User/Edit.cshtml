@@ -1,0 +1,63 @@
+﻿@model CMS.Data.Entities.User
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">
+        CẬP NHẬT THÀNH VIÊN
+    </h2>
+
+    <form method="post">
+
+        <input type="hidden"
+               asp-for="Id" />
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Tên đăng nhập
+            </label>
+
+            <input asp-for="UserName"
+                   class="form-control" />
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Họ và tên
+            </label>
+
+            <input asp-for="FullName"
+                   class="form-control" />
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Quyền hạn
+            </label>
+
+            <input asp-for="Role"
+                   class="form-control" />
+
+        </div>
+
+        <button type="submit"
+                class="btn btn-primary">
+
+            Cập nhật
+
+        </button>
+
+        <a href="/User/Index"
+           class="btn btn-secondary">
+
+            Quay lại
+
+        </a>
+
+    </form>
+
+</div>
