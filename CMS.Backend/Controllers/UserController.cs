@@ -1,96 +1,98 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using CMS.Data;
 using CMS.Data.Entities;
 
-public class UserController : Controller
+namespace CMS.Backend.Controllers
 {
-    // Dữ liệu giả
-    private static List<User> users = new List<User>()
+    public class UserController : Controller
     {
-        new User
+        private readonly ApplicationDbContext _context;
+
+        // Inject DbContext
+        public UserController(ApplicationDbContext context)
         {
-            Id = 1,
-            UserName = "admin",
-            FullName = "Nguyễn Văn A",
-            Role = "Administrator"
-        },
-
-        new User
-        {
-            Id = 2,
-            UserName = "member01",
-            FullName = "Trần Văn B",
-            Role = "Member"
-        }
-    };
-
-    // =========================
-    // READ - Danh sách
-    // =========================
-    public IActionResult Index()
-    {
-        return View(users);
-    }
-
-    // =========================
-    // CREATE - GET
-    // =========================
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // CREATE - POST
-    [HttpPost]
-    public IActionResult Create(User user)
-    {
-        user.Id = users.Max(x => x.Id) + 1;
-
-        users.Add(user);
-
-        return RedirectToAction("Index");
-    }
-
-    // =========================
-    // EDIT - GET
-    // =========================
-    public IActionResult Edit(int id)
-    {
-        var user = users.FirstOrDefault(x => x.Id == id);
-
-        if (user == null)
-            return NotFound();
-
-        return View(user);
-    }
-
-    // EDIT - POST
-    [HttpPost]
-    public IActionResult Edit(User updatedUser)
-    {
-        var user = users.FirstOrDefault(x => x.Id == updatedUser.Id);
-
-        if (user == null)
-            return NotFound();
-
-        user.UserName = updatedUser.UserName;
-        user.FullName = updatedUser.FullName;
-        user.Role = updatedUser.Role;
-
-        return RedirectToAction("Index");
-    }
-
-    // =========================
-    // DELETE
-    // =========================
-    public IActionResult Delete(int id)
-    {
-        var user = users.FirstOrDefault(x => x.Id == id);
-
-        if (user != null)
-        {
-            users.Remove(user);
+            _context = context;
         }
 
-        return RedirectToAction("Index");
+        // =========================
+        // READ - Danh sách
+        // =========================
+        public IActionResult Index()
+        {
+            var users = _context.Users.ToList();
+
+            return View(users);
+        }
+
+        // =========================
+        // CREATE - GET
+        // =========================
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // CREATE - POST
+        // =========================
+        [HttpPost]
+        public IActionResult Create(User user)
+        {
+            _context.Users.Add(user);
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        // =========================
+        // EDIT - GET
+        // =========================
+        public IActionResult Edit(int id)
+        {
+            var user = _context.Users.Find(id);
+
+            if (user == null)
+                return NotFound();
+
+            return View(user);
+        }
+
+        // =========================
+        // EDIT - POST
+        // =========================
+        [HttpPost]
+        public IActionResult Edit(User updatedUser)
+        {
+            var user = _context.Users.Find(updatedUser.Id);
+
+            if (user == null)
+                return NotFound();
+
+            user.UserName = updatedUser.UserName;
+            user.FullName = updatedUser.FullName;
+            user.Role = updatedUser.Role;
+            user.PasswordHash = updatedUser.PasswordHash;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        // =========================
+        // DELETE
+        // =========================
+        public IActionResult Delete(int id)
+        {
+            var user = _context.Users.Find(id);
+
+            if (user != null)
+            {
+                _context.Users.Remove(user);
+
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }

@@ -1,4 +1,9 @@
-﻿using System;
+﻿//HỌ TÊN: BÙI QUỐC VIỆT
+//MÃ SINH VIÊN: 2123110189
+//Lớp:CCQ2311F
+//Ngày tạo: 15/05/2026
+//Mô tả: Quản lí Khách Hàng
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -7,8 +12,7 @@ using System.Threading.Tasks;
 
 namespace CMS.Data.Entities
 {
-    namespace CMS.Data.Entities
-    {
+  
         // Khách hàng
         public class Customer
         {
@@ -32,5 +36,4 @@ namespace CMS.Data.Entities
             public virtual ICollection<Order>? Orders { get; set; }
         }
 
-    }
 }
