@@ -6,7 +6,7 @@
  * MÔ TẢ: QUẢN LÝ DANH MỤC
  */
 
-
+using CMS.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

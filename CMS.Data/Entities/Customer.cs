@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace CMS.Data.Entities
 {
-    namespace CMS.Data.Entities
-    {
+  
         // Khách hàng
         public class Customer
         {
@@ -32,5 +31,7 @@ namespace CMS.Data.Entities
             public virtual ICollection<Order>? Orders { get; set; }
         }
 
-    }
+
 }
+
+

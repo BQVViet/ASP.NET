@@ -1,75 +1,57 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using CMS.Data;
+﻿using CMS.Data;
 using CMS.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Controllers
 {
-    [Authorize] // Bắt buộc đăng nhập
-    public class PostController : Controller
+    public class ProductController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public PostController(ApplicationDbContext context)
+        // Inject DbContext
+        public ProductController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         // =========================
-        // DANH SÁCH BÀI VIẾT
+        // DANH SÁCH SẢN PHẨM
         // =========================
         public IActionResult Index()
         {
-            var posts = _context.Posts
-                .Include(p => p.Category)
-                .OrderByDescending(p => p.CreatedDate)
+            var products = _context.Products
+                .Include(p => p.CategoryProduct)
                 .ToList();
 
-            return View(posts);
+            return View(products);
         }
 
         // =========================
-        // CHI TIẾT
+        // CREATE - GET
         // =========================
-        public IActionResult Details(int id)
-        {
-            var post = _context.Posts
-                .Include(p => p.Category)
-                .FirstOrDefault(p => p.Id == id);
-
-            if (post == null)
-            {
-                return NotFound();
-            }
-
-            return View(post);
-        }
-
-        // =========================
-        // CREATE GET
-        // =========================
-        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.CategoryList =
-                new SelectList(_context.Categories, "Id", "Name");
+            ViewBag.CategoryList = new SelectList(
+                _context.CategoriesProducts,
+                "Id",
+                "Name"
+            );
 
             return View();
         }
 
         // =========================
-        // CREATE POST
+        // CREATE - POST
         // =========================
-        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public IActionResult Create(Post model, IFormFile uploadImage)
+        public IActionResult Create(Product model, IFormFile uploadImage)
         {
-            // Upload ảnh
             if (uploadImage != null && uploadImage.Length > 0)
             {
+                // tạo thư mục uploads
                 string folder = Path.Combine(
                     Directory.GetCurrentDirectory(),
                     "wwwroot",
@@ -81,75 +63,68 @@ namespace CMS.Backend.Controllers
                     Directory.CreateDirectory(folder);
                 }
 
+                // tạo tên file ngẫu nhiên
                 string fileName =
                     Guid.NewGuid().ToString()
                     + Path.GetExtension(uploadImage.FileName);
 
                 string filePath = Path.Combine(folder, fileName);
 
+                // copy file
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     uploadImage.CopyTo(stream);
                 }
 
+                // lưu đường dẫn
                 model.ImageUrl = "/uploads/" + fileName;
             }
 
-            _context.Posts.Add(model);
+            _context.Products.Add(model);
             _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         // =========================
-        // DELETE
+        // EDIT - GET
         // =========================
-        [Authorize(Roles = "Admin")]
-        public IActionResult Delete(int id)
-        {
-            var post = _context.Posts.Find(id);
-
-            if (post != null)
-            {
-                _context.Posts.Remove(post);
-                _context.SaveChanges();
-            }
-
-            return RedirectToAction("Index");
-        }
-
-        // =========================
-        // EDIT GET
-        // =========================
-        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var post = _context.Posts.Find(id);
+            var product = _context.Products.Find(id);
 
-            if (post == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
-            ViewBag.CategoryList =
-                new SelectList(
-                    _context.Categories,
-                    "Id",
-                    "Name",
-                    post.CategoryId
-                );
+            ViewBag.CategoryList = new SelectList(
+                _context.CategoriesProducts,
+                "Id",
+                "Name",
+                product.CategoryProductId
+            );
 
-            return View(post);
+            return View(product);
         }
 
         // =========================
-        // EDIT POST
+        // EDIT - POST
         // =========================
-        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public IActionResult Edit(Post model, IFormFile uploadImage)
+        public IActionResult Edit(Product model, IFormFile uploadImage)
         {
+            var oldProduct = _context.Products
+                .AsNoTracking()
+                .FirstOrDefault(p => p.Id == model.Id);
+
+            if (oldProduct == null)
+            {
+                return NotFound();
+            }
+
+            // upload ảnh mới
             if (uploadImage != null && uploadImage.Length > 0)
             {
                 string folder = Path.Combine(
@@ -179,18 +154,27 @@ namespace CMS.Backend.Controllers
             else
             {
                 // giữ ảnh cũ
-                var oldPost = _context.Posts
-                    .AsNoTracking()
-                    .FirstOrDefault(p => p.Id == model.Id);
-
-                if (oldPost != null)
-                {
-                    model.ImageUrl = oldPost.ImageUrl;
-                }
+                model.ImageUrl = oldProduct.ImageUrl;
             }
 
-            _context.Posts.Update(model);
+            _context.Products.Update(model);
             _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        // =========================
+        // DELETE
+        // =========================
+        public IActionResult Delete(int id)
+        {
+            var product = _context.Products.Find(id);
+
+            if (product != null)
+            {
+                _context.Products.Remove(product);
+                _context.SaveChanges();
+            }
 
             return RedirectToAction("Index");
         }

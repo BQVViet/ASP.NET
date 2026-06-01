@@ -1,60 +1,115 @@
 ﻿@model CMS.Data.Entities.User
 
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Thêm thành viên";
+}
+
 <div class="container mt-4">
 
-    <h2 class="mb-4">
-        THÊM THÀNH VIÊN
-    </h2>
+    <div class="card shadow">
 
-    <form method="post">
+        <div class="card-header bg-dark text-white">
 
-        <div class="mb-3">
-
-            <label class="form-label">
-                Tên đăng nhập
-            </label>
-
-            <input asp-for="UserName"
-                   class="form-control" />
+            <h5 class="mb-0">
+                THÊM THÀNH VIÊN HỆ THỐNG
+            </h5>
 
         </div>
 
-        <div class="mb-3">
+        <div class="card-body">
 
-            <label class="form-label">
-                Họ và tên
-            </label>
+            <form asp-action="Create" method="post">
 
-            <input asp-for="FullName"
-                   class="form-control" />
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Username
+                        </label>
+
+                        <input asp-for="UserName"
+                               class="form-control"
+                               required />
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Mật khẩu
+                        </label>
+
+                        <input asp-for="PasswordHash"
+                               type="password"
+                               class="form-control"
+                               required />
+
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Họ và tên
+                        </label>
+
+                        <input asp-for="FullName"
+                               class="form-control"
+                               required />
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Vai trò
+                        </label>
+
+                        <select asp-for="Role"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                -- Chọn quyền --
+                            </option>
+
+                            <option value="Admin">
+                                Admin
+                            </option>
+
+                            <option value="Editor">
+                                Editor
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <button type="submit"
+                        class="btn btn-primary">
+
+                    Lưu thành viên
+
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-secondary">
+
+                    Quay lại
+
+                </a>
+
+            </form>
 
         </div>
 
-        <div class="mb-3">
-
-            <label class="form-label">
-                Quyền hạn
-            </label>
-
-            <input asp-for="Role"
-                   class="form-control" />
-
-        </div>
-
-        <button type="submit"
-                class="btn btn-success">
-
-            Lưu
-
-        </button>
-
-        <a href="/User/Index"
-           class="btn btn-secondary">
-
-            Quay lại
-
-        </a>
-
-    </form>
+    </div>
 
 </div>

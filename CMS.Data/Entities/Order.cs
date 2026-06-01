@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CMS.Data.Entities.CMS.Data.Entities;
+using CMS.Data.Entities;
 
 namespace CMS.Data.Entities
 {

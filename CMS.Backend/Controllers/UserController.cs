@@ -1,96 +1,127 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CMS.Data;
 using CMS.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-public class UserController : Controller
+namespace CMS.Backend.Controllers
 {
-    // Dữ liệu giả
-    private static List<User> users = new List<User>()
+    [Authorize(Roles = "Admin")]
+    public class UserController : Controller
     {
-        new User
+        private readonly ApplicationDbContext _context;
+
+        // Inject DbContext
+        public UserController(ApplicationDbContext context)
         {
-            Id = 1,
-            UserName = "admin",
-            FullName = "Nguyễn Văn A",
-            Role = "Administrator"
-        },
-
-        new User
-        {
-            Id = 2,
-            UserName = "member01",
-            FullName = "Trần Văn B",
-            Role = "Member"
-        }
-    };
-
-    // =========================
-    // READ - Danh sách
-    // =========================
-    public IActionResult Index()
-    {
-        return View(users);
-    }
-
-    // =========================
-    // CREATE - GET
-    // =========================
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // CREATE - POST
-    [HttpPost]
-    public IActionResult Create(User user)
-    {
-        user.Id = users.Max(x => x.Id) + 1;
-
-        users.Add(user);
-
-        return RedirectToAction("Index");
-    }
-
-    // =========================
-    // EDIT - GET
-    // =========================
-    public IActionResult Edit(int id)
-    {
-        var user = users.FirstOrDefault(x => x.Id == id);
-
-        if (user == null)
-            return NotFound();
-
-        return View(user);
-    }
-
-    // EDIT - POST
-    [HttpPost]
-    public IActionResult Edit(User updatedUser)
-    {
-        var user = users.FirstOrDefault(x => x.Id == updatedUser.Id);
-
-        if (user == null)
-            return NotFound();
-
-        user.UserName = updatedUser.UserName;
-        user.FullName = updatedUser.FullName;
-        user.Role = updatedUser.Role;
-
-        return RedirectToAction("Index");
-    }
-
-    // =========================
-    // DELETE
-    // =========================
-    public IActionResult Delete(int id)
-    {
-        var user = users.FirstOrDefault(x => x.Id == id);
-
-        if (user != null)
-        {
-            users.Remove(user);
+            _context = context;
         }
 
-        return RedirectToAction("Index");
+        // ================= INDEX =================
+
+        // Danh sách người dùng
+        public IActionResult Index()
+        {
+            var userList = _context.Users.ToList();
+
+            return View(userList);
+        }
+
+        // ================= CREATE =================
+
+        // GET: Hiển thị form thêm mới
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Lưu user mới
+        [HttpPost]
+        public IActionResult Create(User model)
+        {
+            // Kiểm tra username đã tồn tại chưa
+            var checkExist = _context.Users
+                .Any(u => u.UserName == model.UserName);
+
+            if (checkExist)
+            {
+                ModelState.AddModelError(
+                    "Username",
+                    "Tên đăng nhập đã tồn tại!"
+                );
+
+                return View(model);
+            }
+
+            // Lưu xuống database
+            _context.Users.Add(model);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        // ================= EDIT =================
+
+        // GET: Hiển thị form sửa
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var user = _context.Users.Find(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        // POST: Cập nhật dữ liệu
+        [HttpPost]
+        public IActionResult Edit(User model, string NewPassword)
+        {
+            // Lấy user cũ
+            var existingUser = _context.Users
+                .AsNoTracking()
+                .FirstOrDefault(u => u.Id == model.Id);
+
+            if (existingUser == null)
+            {
+                return NotFound();
+            }
+
+            // Nếu có nhập mật khẩu mới
+            if (!string.IsNullOrEmpty(NewPassword))
+            {
+                model.PasswordHash = NewPassword;
+            }
+            else
+            {
+                // Giữ mật khẩu cũ
+                model.PasswordHash = existingUser.PasswordHash;
+            }
+
+            _context.Users.Update(model);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        // ================= DELETE =================
+
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var user = _context.Users.Find(id);
+
+            if (user != null)
+            {
+                _context.Users.Remove(user);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }
