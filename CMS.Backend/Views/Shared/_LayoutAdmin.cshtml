@@ -3,51 +3,49 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Viet Modern Admin</title>
 
-    <title>@ViewData["Title"] - PhucCMS Admin</title>
-
-    <!-- Bootstrap -->
-    <link rel="stylesheet"
-          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-    <!-- Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #4f46e5, #06b6d4);
+            --sidebar-bg: #f8fafc;
+            --body-bg: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #f4f6f9;
+            font-family: 'Inter', sans-serif;
+            background: var(--body-bg);
+            color: var(--text-main);
             overflow-x: hidden;
         }
 
-        /* =========================
-               SIDEBAR
-            ========================= */
+        /* =================================================================
+                   SIDEBAR STYLING
+                ==================================================================== */
         .sidebar {
             position: fixed;
             left: 0;
             top: 0;
             width: 280px;
             height: 100vh;
-            background: linear-gradient(180deg,#111827,#030712);
-            color: white;
-            padding-top: 20px;
-            box-shadow: 6px 0 25px rgba(0,0,0,.4);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 20px 15px;
             overflow-y: auto;
-            scrollbar-width: thin;
-            scroll-behavior: auto;
+            z-index: 1000;
         }
 
-        /* LOGO */
+        /* BRAND LOGO */
         .logo-box {
-            padding: 25px 20px;
-            border-bottom: 1px solid rgba(255,255,255,.08);
+            padding: 15px 10px 25px 10px;
+            border-bottom: 1px solid var(--border-color);
             margin-bottom: 20px;
         }
 
@@ -56,417 +54,341 @@
                 align-items: center;
                 gap: 12px;
                 margin: 0;
-                font-size: 28px;
-                font-weight: 800;
-                color: white;
+                font-size: 22px;
+                font-weight: 700;
+                color: #4f46e5;
             }
 
                 .logo-box h3 i {
-                    width: 52px;
-                    height: 52px;
-                    border-radius: 14px;
-                    background: linear-gradient(135deg,#fbbf24,#d97706);
-                    color: #111827;
+                    width: 42px;
+                    height: 42px;
+                    border-radius: 12px;
+                    background: var(--primary-gradient);
+                    color: white;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 24px;
+                    font-size: 20px;
+                    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
                 }
 
             .logo-box p {
-                margin-top: 12px;
-                margin-left: 64px;
-                color: #d1d5db;
-                font-size: 14px;
+                margin-top: 6px;
+                margin-left: 2px;
+                color: var(--text-muted);
+                font-size: 13px;
+                font-weight: 500;
             }
 
-        /* MENU */
+        /* MENU NAVIGATION */
         .sidebar-menu {
-            padding: 0 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
             .sidebar-menu a {
                 display: flex;
                 align-items: center;
-                gap: 15px;
-                padding: 15px 18px;
-                margin-bottom: 8px;
-                border-radius: 14px;
-                color: #d1d5db;
+                gap: 12px;
+                padding: 12px 16px;
+                border-radius: 12px;
+                color: #475569;
                 text-decoration: none;
-                font-size: 15px;
-                font-weight: 600;
-                transition: all .3s ease;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
                 .sidebar-menu a i {
-                    font-size: 20px;
-                    min-width: 25px;
+                    font-size: 18px;
+                    color: #94a3b8;
+                    transition: color 0.25s ease;
                 }
 
                 .sidebar-menu a:hover {
-                    background: rgba(251,191,36,.12);
-                    color: #fbbf24;
-                    transform: translateX(6px);
+                    background: #f1f5f9;
+                    color: var(--text-main);
                 }
+
+                    .sidebar-menu a:hover i {
+                        color: #4f46e5;
+                    }
 
                 .sidebar-menu a.active {
-                    background: linear-gradient(135deg,#fbbf24,#d97706);
-                    color: #111827;
-                    box-shadow: 0 10px 20px rgba(251,191,36,.35);
+                    background: var(--primary-gradient);
+                    color: white;
+                    font-weight: 600;
+                    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
                 }
 
-        /* =========================
-               MAIN CONTENT
-            ========================= */
+                    .sidebar-menu a.active i {
+                        color: white;
+                    }
+
+        /* =================================================================
+                   MAIN CONTENT & TOPBAR
+                ==================================================================== */
         .main-content {
             margin-left: 280px;
-            padding: 30px;
+            padding: 40px;
+            min-height: 100vh;
         }
 
-        /* =========================
-               TOPBAR
-            ========================= */
         .topbar {
-            background: #ffffff;
-            padding: 20px 30px;
-            border-radius: 20px;
-            margin-bottom: 25px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 10px 25px rgba(0,0,0,.06);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 15px 30px;
+            border-radius: 16px;
+            margin-bottom: 35px;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.03);
         }
 
             .topbar h4 {
                 margin: 0;
-                font-size: 24px;
+                font-size: 20px;
                 font-weight: 700;
-                color: #111827;
+                color: var(--text-main);
             }
 
             .topbar p {
-                margin: 5px 0 0;
-                color: #6b7280;
+                margin: 4px 0 0;
+                color: var(--text-muted);
+                font-size: 13px;
             }
 
-        /* USER */
+        /* USER CONTENT */
         .user-info {
-            line-height: 1.4;
+            line-height: 1.3;
         }
 
             .user-info .fw-bold {
-                color: #111827;
-                font-size: 15px;
+                color: var(--text-main);
+                font-size: 14px;
             }
 
-        /* AVATAR */
         .avatar-user {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            background: linear-gradient(135deg,#fbbf24,#d97706);
-            color: #111827;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--primary-gradient);
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            font-weight: 800;
-            box-shadow: 0 8px 20px rgba(251,191,36,.35);
+            font-size: 15px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
         }
 
-        /* LOGOUT BUTTON */
         .logout-btn {
-            border: none;
-            border-radius: 50px;
-            padding: 10px 18px;
+            border: 1px solid #fee2e2;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 13px;
             font-weight: 600;
-            background: linear-gradient(135deg,#dc2626,#ef4444);
-            color: white;
+            background: #fef2f2;
+            color: #ef4444;
+            transition: all 0.2s;
         }
 
             .logout-btn:hover {
-                opacity: .9;
+                background: #ef4444;
                 color: white;
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
             }
 
-        /* =========================
-               CARD
-            ========================= */
+        /* =================================================================
+                   COMPONENTS (CARD, TABLE, FORM) ĐỒNG BỘ
+                ==================================================================== */
         .card {
-            border: none;
-            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
             background: white;
-            box-shadow: 0 10px 25px rgba(0,0,0,.06);
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.02);
         }
 
         .card-header {
             background: white;
-            border-bottom: 1px solid #f1f5f9;
-            font-weight: 700;
-        }
-
-        /* =========================
-               TABLE
-            ========================= */
-        .table {
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 0;
-        }
-
-            .table thead {
-                background: #111827;
-                color: white;
-            }
-
-                .table thead th {
-                    border: none;
-                    padding: 15px;
-                    font-weight: 600;
-                }
-
-            .table tbody td {
-                padding: 15px;
-                vertical-align: middle;
-            }
-
-            .table tbody tr:hover {
-                background: #fef3c7;
-            }
-
-        /* =========================
-               FORM
-            ========================= */
-        .form-control,
-        .form-select {
-            border-radius: 12px;
-            border: 1px solid #d1d5db;
-            padding: 10px 14px;
-        }
-
-            .form-control:focus,
-            .form-select:focus {
-                border-color: #fbbf24;
-                box-shadow: 0 0 0 .2rem rgba(251,191,36,.25);
-            }
-
-        /* =========================
-               BUTTON
-            ========================= */
-        .btn-primary {
-            background: linear-gradient(135deg,#fbbf24,#d97706);
-            border: none;
-            color: #111827;
-            font-weight: 700;
-        }
-
-            .btn-primary:hover {
-                background: linear-gradient(135deg,#f59e0b,#b45309);
-                color: #111827;
-            }
-
-        .btn-success {
-            border: none;
-        }
-
-        .btn-danger {
-            border: none;
-        }
-
-        .btn {
-            border-radius: 12px;
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px;
             font-weight: 600;
         }
 
-        /* SCROLLBAR */
+        .table {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+            .table thead {
+                background: #f8fafc;
+                color: #475569;
+            }
+
+                .table thead th {
+                    border-bottom: 1px solid var(--border-color);
+                    padding: 14px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+
+            .table tbody td {
+                padding: 14px;
+                vertical-align: middle;
+                font-size: 14px;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .table tbody tr:hover {
+                background: #f8fafc;
+            }
+
+        /* FORM CUSTOM */
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            padding: 10px 14px;
+            font-size: 14px;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #6366f1;
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+            }
+
+        /* MODERN UI BUTTONS */
+        .btn {
+            border-radius: 10px;
+            padding: 9px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+
+            .btn-primary:hover {
+                background: linear-gradient(135deg, #4338ca, #0891b2);
+                color: white;
+                transform: translateY(-1px);
+            }
+
+        /* CUSTOM MODERN SCROLLBAR */
         ::-webkit-scrollbar {
             width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #fbbf24;
-            border-radius: 20px;
+            background: #cbd5e1;
+            border-radius: 10px;
         }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
     </style>
-
 </head>
-
 <body>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar" >
-
+    <div class="sidebar">
         <div class="logo-box">
-
-            @* <h3> *@
-            @*     <i class="bi bi-speedometer2"></i> *@
-            @*     VietCMS *@
-            @* </h3> *@
-
-            @* <p>Hệ thống quản trị Admin</p> *@
             <h3>
-                <i class="bi bi-speedometer2"></i>
-                VietCMS
+                <i class="bi bi-rocket-takeoff"></i>
+                Viet Admin
             </h3>
-
-            <p>CMS Administration Panel</p>
-
+            <p>Hệ thống quản trị số cao cấp</p>
         </div>
 
         <div class="sidebar-menu">
-
-            <a asp-controller="Home"
-               asp-action="Index">
-
-                <i class="bi bi-house-door"></i>
-
-                Bảng điều khiển
-
+            <a asp-controller="Home" asp-action="Index">
+                <i class="bi bi-columns-gap"></i> Bảng điều khiển
             </a>
-
-            <a asp-controller="Category"
-               asp-action="Index">
-
-                <i class="bi bi-grid"></i>
-
-                Quản lý Danh mục
-
+            <a asp-controller="Category" asp-action="Index">
+                <i class="bi bi-folder2-open"></i> Quản lý Danh mục
             </a>
-
-            <a asp-controller="Post"
-               asp-action="Index">
-
-                <i class="bi bi-file-earmark-text"></i>
-
-                Quản lý Bài viết
-
+            <a asp-controller="Post" asp-action="Index">
+                <i class="bi bi-journal-text"></i> Quản lý Bài viết
             </a>
-
-            <a asp-controller="User"
-               asp-action="Index">
-
-                <i class="bi bi-people"></i>
-
-                Quản lý Thành viên
-
+            <a asp-controller="User" asp-action="Index">
+                <i class="bi bi-shield-lock"></i> Quản lý Thành viên
             </a>
-
-            <a asp-controller="CategoryProduct"
-               asp-action="Index">
-
-                <i class="bi bi-tags"></i>
-
-                Danh mục sản phẩm
-
+            <a asp-controller="CategoryProduct" asp-action="Index">
+                <i class="bi bi-collection"></i> Danh mục sản phẩm
             </a>
-
-            <a asp-controller="Product"
-               asp-action="Index">
-
-                <i class="bi bi-box-seam"></i>
-
-                Sản phẩm
-
+            <a asp-controller="Product" asp-action="Index">
+                <i class="bi bi-box-seam"></i> Sản phẩm
             </a>
-
-            <a asp-controller="Customer"
-               asp-action="Index">
-
-                <i class="bi bi-person-lines-fill"></i>
-
-                Khách hàng
-
+            <a asp-controller="Customer" asp-action="Index">
+                <i class="bi bi-person-badge"></i> Khách hàng
             </a>
-
-            <a asp-controller="Order"
-               asp-action="Index">
-
-                <i class="bi bi-cart-check"></i>
-
-                Đơn hàng
-
+            <a asp-controller="Order" asp-action="Index">
+                <i class="bi bi-bag-check"></i> Đơn hàng
             </a>
-
-            <a asp-controller="OrderDetail"
-               asp-action="Index">
-
-                <i class="bi bi-receipt"></i>
-
-                Chi tiết đơn hàng
-
+            <a asp-controller="OrderDetail" asp-action="Index">
+                <i class="bi bi-receipt-cutoff"></i> Chi tiết đơn hàng
             </a>
-
         </div>
-
     </div>
 
-    <!-- MAIN -->
     <div class="main-content">
-
-        <!-- TOPBAR -->
         <div class="topbar d-flex justify-content-between align-items-center">
-
-            <!-- LEFT -->
             <div>
-
                 <h4>@ViewData["Title"]</h4>
-
-                <p>Quản lý dữ liệu hệ thống CMS</p>
-
+                <p>Tổng quan dữ liệu thời gian thực</p>
             </div>
 
-            <!-- RIGHT -->
             <div class="d-flex align-items-center gap-3">
-
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <div class="user-info text-end">
-
-                        <div class="fw-bold text-dark">
-
-                            @User.FindFirst("FullName")?.Value
-
-                        </div>
-
-                        <small class="text-muted">
-
-                            @User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
-
-                        </small>
-
+                    <div class="user-info text-end d-none d-sm-block">
+                        <div class="fw-bold">@User.FindFirst("FullName")?.Value</div>
+                        <small class="text-muted">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</small>
                     </div>
 
                     <div class="avatar-user">
-
                         @User.Identity.Name.Substring(0, 1).ToUpper()
-
                     </div>
 
-                    <a asp-controller="Account"
-                       asp-action="Logout"
-                       class="btn btn-danger btn-sm logout-btn">
-
-                        <i class="bi bi-box-arrow-right me-1"></i>
-
-                        Đăng xuất
-
+                    <a asp-controller="Account" asp-action="Logout" class="logout-btn text-decoration-none">
+                        <i class="bi bi-box-arrow-right me-1"></i> Đăng xuất
                     </a>
                 }
-
             </div>
-
         </div>
 
-        <!-- BODY -->
         @RenderBody()
-
     </div>
 
-    <!-- SCRIPT -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
     @await RenderSectionAsync("Scripts", required: false)
 
+    <script>
+        $(document).ready(function () {
+            var currentUrl = window.location.pathname;
+            $('.sidebar-menu a').each(function () {
+                var linkUrl = $(this).attr('href');
+                if (currentUrl.toLowerCase() === linkUrl.toLowerCase()) {
+                    $(this).addClass('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

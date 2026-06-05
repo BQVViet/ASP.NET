@@ -1,349 +1,206 @@
 ﻿@model IEnumerable<CMS.Data.Entities.Category>
 
-@* @{
-    ViewData["Title"] = "Quản lý danh mục";
-} *@
 @{
-    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Quản lý danh mục";
+    Layout = "_LayoutAdmin"; // Hoặc tên Layout mới của bạn
 }
 
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<div class="container mt-5">
-
-    <div class="category-card shadow-sm border-0">
-
-        <!-- HEADER -->
-        <div class="category-header">
-
-            <div class="d-flex justify-content-between align-items-center">
-
+<div class="container-fluid px-0">
+    <div class="card border-0">
+        <div class="card-header bg-white border-0 pt-4 pb-0">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                 <div>
-
-                    <h3 class="mb-0 text-white fw-bold">
-
-                        <i class="fas fa-folder-open me-2"></i>
-
-                        DANH SÁCH DANH MỤC
-
+                    <h3 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
+                        <i class="bi bi-folder2-open text-primary"></i>
+                        Danh Sách Danh Mục
                     </h3>
-
-                    <p class="text-white-50 small mb-0">
-                        Quản lý phân loại bài viết và sản phẩm
+                    <p class="text-muted small mb-0">
+                        Quản lý hệ thống cấu trúc phân loại bài viết và sản phẩm toàn sàn
                     </p>
-
                 </div>
 
-                <!-- CREATE BUTTON -->
-                <a asp-action="Create"
-                   class="btn btn-add-new">
-
-                    <i class="fas fa-plus-circle me-1"></i>
-
-                    Thêm danh mục
-
-                </a>
-
+                <div>
+                    <a asp-action="Create" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-plus-circle-fill"></i>
+                        Thêm danh mục mới
+                    </a>
+                </div>
             </div>
-
         </div>
 
-        <!-- TABLE -->
-        <div class="p-0">
+        <div class="card-body px-0 pt-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle custom-modern-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;" class="ps-4">ID</th>
+                            <th style="width: 30%;">Tên danh mục</th>
+                            <th style="width: 40%;">Mô tả chi tiết</th>
+                            <th style="width: 20%;" class="text-end pe-4">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <span class="modern-badge">
+                                            #@item.Id
+                                        </span>
+                                    </td>
 
-            <table class="table table-hover mb-0 custom-category-table">
+                                    <td>
+                                        <span class="fw-semibold text-dark text-hover-primary">
+                                            @item.Name
+                                        </span>
+                                    </td>
 
-                <thead>
+                                    <td>
+                                        <span class="text-secondary d-inline-block text-truncate" style="max-width: 380px;">
+                                            @item.Description
+                                        </span>
+                                    </td>
 
-                    <tr>
+                                    <td class="text-end pe-4">
+                                        <div class="d-inline-flex gap-2 justify-content-end">
+                                            <a asp-action="Edit" asp-route-id="@item.Id"
+                                               class="action-btn btn-edit" title="Chỉnh sửa">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
 
-                        <th style="width:10%" class="ps-4">
-                            ID
-                        </th>
-
-                        <th style="width:30%">
-                            Tên danh mục
-                        </th>
-
-                        <th style="width:40%">
-                            Mô tả chi tiết
-                        </th>
-
-                        <th style="width:20%" class="text-end pe-4">
-                            Thao tác
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var item in Model)
+                                            <a asp-action="Delete" asp-route-id="@item.Id"
+                                               class="action-btn btn-delete"
+                                               onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?')" title="Xóa">
+                                                <i class="bi bi-trash3"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
                         {
                             <tr>
-
-                                <!-- ID -->
-                                <td class="ps-4">
-
-                                    <span class="badge bg-light text-dark border">
-                                        #@item.Id
-                                    </span>
-
-                                </td>
-
-                                <!-- NAME -->
-                                <td>
-
-                                    <span class="fw-bold text-primary">
-                                        @item.Name
-                                    </span>
-
-                                </td>
-
-                                <!-- DESCRIPTION -->
-                                <td>
-
-                                    <span class="text-muted d-inline-block text-truncate"
-                                          style="max-width: 300px;">
-
-                                        @item.Description
-
-                                    </span>
-
-                                </td>
-
-                                <!-- ACTION -->
-                                <td class="text-end pe-4">
-
-                                    <div class="btn-group">
-
-                                        <!-- EDIT -->
-                                        <a asp-action="Edit"
-                                           asp-route-id="@item.Id"
-                                           class="btn btn-outline-warning btn-sm mx-1">
-
-                                            <i class="fas fa-edit"></i>
-
-                                        </a>
-
-                                        <!-- DELETE -->
-                                        <a asp-action="Delete"
-                                           asp-route-id="@item.Id"
-                                           class="btn btn-outline-danger btn-sm mx-1"
-                                           onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?')">
-
-                                            <i class="fas fa-trash-alt"></i>
-
-                                        </a>
-
+                                <td colspan="4" class="text-center py-5">
+                                    <div class="text-muted opacity-50 mb-3">
+                                        <i class="bi bi-folder-x" style="font-size: 3.5rem;"></i>
                                     </div>
-
+                                    <p class="text-secondary fw-medium mb-0">
+                                        Chưa có danh mục nào tồn tại trên hệ thống.
+                                    </p>
                                 </td>
-
                             </tr>
                         }
-                    }
-                    else
-                    {
-                        <tr>
-
-                            <td colspan="4" class="text-center py-5">
-
-                                <i class="fas fa-folder-open display-5 text-muted mb-3"></i>
-
-                                <p class="text-muted mb-0">
-                                    Chưa có danh mục nào trong hệ thống.
-                                </p>
-
-                            </td>
-
-                        </tr>
-                    }
-
-                </tbody>
-
-            </table>
-
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <!-- FOOTER -->
-        <div class="card-footer bg-white py-3 text-center border-top">
-
-            <small class="text-muted">
-
-                Hiển thị @Model.Count() danh mục dữ liệu
-
-            </small>
-
+        <div class="card-footer bg-white border-top-0 py-3 d-flex justify-content-between align-items-center">
+            <span class="text-muted small fw-medium">
+                Tổng số bản ghi: <strong class="text-dark">@Model.Count()</strong> danh mục
+            </span>
         </div>
-
     </div>
-
 </div>
 
 <style>
-
+    /* Loại bỏ background cũ của file view */
     body {
-        background: #111827;
+        background: #f1f5f9 !important;
     }
 
-    /* CARD */
-    .category-card {
-        background: #1f2937;
-        border-radius: 24px;
-        overflow: hidden;
-        border: 1px solid #374151;
-        box-shadow: 0 20px 40px rgba(0,0,0,.35);
+    /* Tối ưu hóa Table theo phong cách Modern Clean */
+    .custom-modern-table {
+        border: none !important;
+        margin-bottom: 0;
     }
 
-    /* HEADER */
-    .category-header {
-        background: linear-gradient(135deg,#ea580c,#fb923c);
-        padding: 25px 30px;
-    }
-
-        .category-header h3 {
-            font-size: 28px;
-            letter-spacing: 1px;
+        .custom-modern-table thead {
+            background: #f8fafc !important;
         }
 
-        .category-header p {
-            font-size: 14px;
-        }
-
-    /* BUTTON CREATE */
-    .btn-add-new {
-        background: white;
-        color: #ea580c;
-        border: none;
-        border-radius: 50px;
-        padding: 12px 24px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: .3s;
-    }
-
-        .btn-add-new:hover {
-            background: #fff7ed;
-            color: #c2410c;
-            transform: translateY(-3px);
-        }
-
-    /* TABLE */
-    .custom-category-table {
-        margin: 0;
-        color: white;
-    }
-
-        .custom-category-table thead {
-            background: #111827;
-        }
-
-            .custom-category-table thead th {
-                color: #9ca3af;
-                border: none;
-                padding: 18px;
+            .custom-modern-table thead th {
+                color: #64748b !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
                 text-transform: uppercase;
-                letter-spacing: 1px;
-                font-size: 12px;
+                letter-spacing: 0.5px;
+                padding: 16px 14px !important;
+                border-bottom: 1px solid #e2e8f0 !important;
             }
 
-        .custom-category-table td {
-            padding: 18px;
-            border-bottom: 1px solid #374151;
-            vertical-align: middle;
+        .custom-modern-table tbody td {
+            padding: 16px 14px !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            color: #334155;
         }
 
-        .custom-category-table tbody tr {
-            transition: .3s;
+        .custom-modern-table tbody tr {
+            transition: background-color 0.2s ease;
         }
 
-            .custom-category-table tbody tr:hover {
-                background: #2d3748;
+            .custom-modern-table tbody tr:hover {
+                background-color: #f8fafc !important;
             }
 
-    /* ID BADGE */
-    .badge {
-        background: rgba(249,115,22,.15) !important;
-        color: #fb923c !important;
-        border: 1px solid #fb923c !important;
-        padding: 8px 14px;
-        border-radius: 30px;
+    /* Kiểu dáng Badge ID mới */
+    .modern-badge {
+        background: #e0e7ff !important;
+        color: #4f46e5 !important;
+        padding: 6px 12px;
+        border-radius: 8px;
         font-size: 13px;
+        font-weight: 600;
+        display: inline-block;
     }
 
-    /* NAME */
-    .text-primary {
-        color: #fb923c !important;
-        font-size: 15px;
-    }
-
-    /* DESCRIPTION */
-    .text-muted {
-        color: #d1d5db !important;
-    }
-
-    /* EDIT BUTTON */
-    .btn-outline-warning {
+    /* Custom các nút thao tác gọn gàng */
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 16px;
+        transition: all 0.2s ease;
         border: none;
-        background: rgba(245,158,11,.15);
-        color: #fbbf24;
     }
 
-        .btn-outline-warning:hover {
-            background: #f59e0b;
+    /* Nút sửa màu xanh dương nhạt */
+    .btn-edit {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+        .btn-edit:hover {
+            background: #2563eb;
             color: white;
+            transform: translateY(-2px);
         }
 
-    /* DELETE BUTTON */
-    .btn-outline-danger {
-        border: none;
-        background: rgba(239,68,68,.15);
+    /* Nút xóa màu đỏ hồng nhạt */
+    .btn-delete {
+        background: #fef2f2;
         color: #ef4444;
     }
 
-        .btn-outline-danger:hover {
+        .btn-delete:hover {
             background: #ef4444;
             color: white;
+            transform: translateY(-2px);
         }
 
-    .btn-group .btn {
-        width: 42px;
-        height: 42px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px !important;
-        transition: .3s;
+    /* Text link hiệu ứng hover nhẹ */
+    .text-hover-primary {
+        transition: color 0.15s ease;
     }
 
-        .btn-group .btn:hover {
-            transform: translateY(-3px);
+        .text-hover-primary:hover {
+            color: #4f46e5 !important;
         }
-
-    /* FOOTER */
-    .card-footer {
-        background: #1f2937 !important;
-        border-top: 1px solid #374151 !important;
-        color: #9ca3af;
-    }
-
-    /* EMPTY */
-    .display-5 {
-        color: #6b7280 !important;
-    }
-
-    /* SCROLLBAR */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #fb923c;
-        border-radius: 20px;
-    }
 </style>

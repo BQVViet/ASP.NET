@@ -5,324 +5,266 @@
     ViewData["Title"] = "Quản lý bài viết";
 }
 
-<div class="container mt-5">
+<div class="container-fluid px-0">
+    <div class="card border-0">
+        <div class="card-header bg-white border-0 pt-4 pb-0">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                    <h3 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
+                        <i class="bi bi-journal-text text-primary"></i>
+                        Quản Lý Bài Viết
+                    </h3>
+                    <p class="text-muted small mb-0">
+                        Hệ thống điều phối, biên tập và phân loại nội dung tin tức trên nền tảng
+                    </p>
+                </div>
 
-    <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
-
-        <div>
-
-            <h2 class="fw-bold text-uppercase mb-2"
-                style="letter-spacing: 2px;">
-
-                Quản lý bài viết
-
-            </h2>
-
-            <div class="bg-primary"
-                 style="height: 3px; width: 70px;">
+                <div>
+                    <a asp-action="Create" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-plus-circle-fill"></i>
+                        Thêm bài viết mới
+                    </a>
+                </div>
             </div>
-
-            <p class="text-muted mt-2 mb-0">
-
-                Tổng cộng có @(Model?.Count() ?? 0) bài viết
-
-            </p>
-
         </div>
 
-        <!-- BUTTON CREATE -->
-        <a asp-action="Create"
-           class="btn btn-primary rounded-pill px-4 shadow-sm">
+        <div class="card-body px-0 pt-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle custom-modern-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 8%;" class="ps-4">Hình ảnh</th>
+                            <th style="width: 32%;">Tiêu đề bài viết</th>
+                            <th style="width: 15%;">Danh mục</th>
+                            <th style="width: 25%;">Nội dung tóm tắt</th>
+                            <th style="width: 10%;">Ngày đăng</th>
+                            <th style="width: 10%;" class="text-end pe-4">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="modern-thumbnail">
+                                            <img src="@(string.IsNullOrEmpty(item.ImageUrl)
+                                                         ? "https://via.placeholder.com/120x80?text=No+Image"
+                                                         : item.ImageUrl)"
+                                                 alt="@item.Title" />
+                                        </div>
+                                    </td>
 
-            <i class="bi bi-plus-circle me-1"></i>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="fw-semibold text-dark text-decoration-none text-hover-primary line-clamp-2">
+                                            @item.Title
+                                        </a>
+                                    </td>
 
-            Thêm bài viết mới
+                                    <td>
+                                        <span class="modern-badge">
+                                            @(item.Category != null ? item.Category.Name : "Không có danh mục")
+                                        </span>
+                                    </td>
 
-        </a>
+                                    <td>
+                                        <span class="text-secondary d-inline-block text-truncate-custom line-clamp-2">
+                                            @Html.Raw(item.Content)
+                                        </span>
+                                    </td>
 
-    </div>
+                                    <td class="text-secondary small">
+                                        <i class="bi bi-calendar3 me-1"></i>
+                                        @item.CreatedDate.ToString("dd/MM/yyyy")
+                                    </td>
 
-    <!-- POSTS -->
-    <div class="row">
+                                    <td class="text-end pe-4">
+                                        <div class="d-inline-flex gap-2 justify-content-end">
+                                            <a asp-action="Details" asp-route-id="@item.Id"
+                                               class="action-btn btn-view" title="Xem chi tiết">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
 
-        @if (Model != null && Model.Any())
-        {
-            foreach (var item in Model)
-            {
-                <div class="col-lg-4 col-md-6 mb-4">
+                                            <a asp-action="Edit" asp-route-id="@item.Id"
+                                               class="action-btn btn-edit" title="Chỉnh sửa">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
 
-                    <div class="card h-100 border-0 shadow-sm post-card">
-
-                        <!-- IMAGE -->
-                        <div class="position-relative overflow-hidden post-image">
-
-                            <img src="@(string.IsNullOrEmpty(item.ImageUrl)
-                                                                         ? "https://via.placeholder.com/400x250?text=No+Image"
-                                                                         : item.ImageUrl)"
-                                                                                         class="w-100 h-100 transition-img"
-                                                                                         style="object-fit:cover;"
-                                                                                         alt="@item.Title" />
-
-                            <!-- CATEGORY -->
-                            <div class="category-badge">
-
-                                @(item.Category != null
-                                                        ? item.Category.Name
-                                                        : "Không có danh mục")
-
-                            </div>
-
-                        </div>
-
-                        <!-- BODY -->
-                        <div class="card-body p-4">
-
-                            <!-- CATEGORY -->
-                            <span class="badge bg-info text-dark mb-3">
-
-                                @(item.Category != null
-                                                        ? item.Category.Name
-                                                        : "Không có danh mục")
-
-                    </span>
-
-                            <!-- TITLE -->
-                            <h5 class="card-title fw-bold text-dark line-clamp-2">
-
-                                @item.Title
-
-                            </h5>
-
-                            <!-- CONTENT -->
-                            <div class="card-text text-secondary small line-clamp-3 mb-4">
-
-                                @Html.Raw(item.Content)
-
-                            </div>
-
-                            <!-- DATE -->
-                            <p class="text-muted small mb-0">
-
-                                <i class="bi bi-calendar-event me-1"></i>
-
-                                @item.CreatedDate.ToString("dd/MM/yyyy")
-                            </p>
-
-                        </div>
-
-                        <!-- FOOTER -->
-                        <div class="card-footer bg-transparent border-0 p-4 pt-0">
-
-                            <div class="d-grid gap-2">
-
-                                <!-- DETAIL -->
-                                <a asp-action="Details"
-                                   asp-route-id="@item.Id"
-                                   class="btn btn-dark rounded-pill py-2 fw-semibold shadow-sm">
-
-                                    <i class="bi bi-eye me-1"></i>
-
-                                    Đọc chi tiết
-
-                                </a>
-
-                                <!-- ACTION BUTTONS -->
-                                <div class="d-flex gap-2">
-
-                                    <!-- EDIT -->
-                                    <a asp-action="Edit"
-                                       asp-route-id="@item.Id"
-                                       class="btn btn-outline-warning flex-fill rounded-pill">
-
-                                        <i class="bi bi-pencil-square me-1"></i>
-
-                                        Sửa
-
-                                    </a>
-
-                                    <!-- DELETE -->
-                                    <a asp-action="Delete"
-                                       asp-route-id="@item.Id"
-                                       class="btn btn-outline-danger flex-fill rounded-pill"
-                                       onclick="return confirm('Chúng ta có chắc chắn muốn xóa bài viết này không?')">
-
-                                        <i class="bi bi-trash me-1"></i>
-
-                                        Xóa
-
-                                    </a>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-                }
-        }
-        else
-        {
-            <div class="col-12 text-center py-5">
-
-                <i class="bi bi-folder-x display-1 text-light"></i>
-
-                <p class="text-muted mt-3">
-
-                    Hiện chưa có bài viết nào được đăng tải.
-
-                </p>
-
+                                            <a asp-action="Delete" asp-route-id="@item.Id"
+                                               class="action-btn btn-delete"
+                                               onclick="return confirm('Chúng ta có chắc chắn muốn xóa bài viết này không?')" title="Xóa">
+                                                <i class="bi bi-trash3"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <div class="text-muted opacity-50 mb-3">
+                                        <i class="bi bi-journal-x" style="font-size: 3.5rem;"></i>
+                                    </div>
+                                    <p class="text-secondary fw-medium mb-0">
+                                        Hiện chưa có bài viết nào được đăng tải trên hệ thống.
+                                    </p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        }
+        </div>
 
+        <div class="card-footer bg-white border-top-0 py-3 d-flex justify-content-between align-items-center">
+            <span class="text-muted small fw-medium">
+                Tổng cộng: <strong class="text-dark">@(Model?.Count() ?? 0)</strong> bài viết công khai
+            </span>
+        </div>
     </div>
-
 </div>
 
-@section Scripts {
+<style>
+    /* Reset nền body trắng sáng sạch sẽ */
+    body {
+        background: #f1f5f9 !important;
+    }
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    /* Thiết lập cấu trúc Table Modern */
+    .custom-modern-table {
+        border: none !important;
+        margin-bottom: 0;
+    }
 
-    <style>
-
-        body {
-            background: #0f172a;
+        .custom-modern-table thead {
+            background: #f8fafc !important;
         }
 
-        /* CARD */
-        .post-card {
-            background: #1e293b;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid #334155;
-            transition: all .4s ease;
-        }
-
-            .post-card:hover {
-                transform: translateY(-8px);
-                box-shadow: 0 25px 50px rgba(0,0,0,.4);
-                border-color: #38bdf8;
+            .custom-modern-table thead th {
+                color: #64748b !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 16px 14px !important;
+                border-bottom: 1px solid #e2e8f0 !important;
             }
 
-        /* IMAGE */
-        .post-image {
-            height: 240px;
-            position: relative;
-            overflow: hidden;
+        .custom-modern-table tbody td {
+            padding: 16px 14px !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            color: #334155;
         }
 
-        .transition-img {
-            transition: transform .8s ease;
+        .custom-modern-table tbody tr {
+            transition: background-color 0.2s ease;
         }
 
-        .post-card:hover .transition-img {
-            transform: scale(1.12);
+            .custom-modern-table tbody tr:hover {
+                background-color: #f8fafc !important;
+            }
+
+    /* Custom Thumbnail ảnh bài viết gọn gàng */
+    .modern-thumbnail {
+        width: 64px;
+        height: 44px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        background: #f1f5f9;
+    }
+
+        .modern-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        /* CATEGORY */
-        .category-badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(14,165,233,.95);
+    /* Kiểu dáng Badge phân loại */
+    .modern-badge {
+        background: #e0e7ff !important;
+        color: #4f46e5 !important;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    /* Hạn chế dòng chữ trong Table */
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .text-truncate-custom p,
+    .text-truncate-custom div {
+        margin-bottom: 0 !important;
+        display: inline;
+    }
+
+    /* Thẻ điều hướng thao tác phẳng */
+    .action-btn {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 15px;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    /* Chi tiết (Xám nhạt) */
+    .btn-view {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+        .btn-view:hover {
+            background: #475569;
             color: white;
-            padding: 8px 18px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            backdrop-filter: blur(10px);
+            transform: translateY(-2px);
         }
 
-        /* TITLE */
-        .card-title {
+    /* Sửa (Xanh dương) */
+    .btn-edit {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+        .btn-edit:hover {
+            background: #2563eb;
             color: white;
-            font-weight: 700;
-            font-size: 18px;
+            transform: translateY(-2px);
         }
 
-        /* DESCRIPTION */
-        .card-text {
-            color: #cbd5e1;
+    /* Xóa (Đỏ) */
+    .btn-delete {
+        background: #fef2f2;
+        color: #ef4444;
+    }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+            transform: translateY(-2px);
         }
 
-        /* LIMIT TEXT */
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            min-height: 55px;
+    /* Hiệu ứng liên kết */
+    .text-hover-primary {
+        transition: color 0.15s ease;
+    }
+
+        .text-hover-primary:hover {
+            color: #4f46e5 !important;
         }
-
-        .line-clamp-3 {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            min-height: 75px;
-        }
-
-        /* BUTTON DETAIL */
-        .btn-dark {
-            background: linear-gradient(135deg,#0ea5e9,#2563eb);
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-
-            .btn-dark:hover {
-                background: linear-gradient(135deg,#0284c7,#1d4ed8);
-                transform: translateY(-2px);
-            }
-
-        /* EDIT */
-        .btn-outline-warning {
-            border: 1px solid #f59e0b;
-            color: #f59e0b;
-        }
-
-            .btn-outline-warning:hover {
-                background: #f59e0b;
-                color: white;
-            }
-
-        /* DELETE */
-        .btn-outline-danger {
-            border: 1px solid #ef4444;
-            color: #ef4444;
-        }
-
-            .btn-outline-danger:hover {
-                background: #ef4444;
-                color: white;
-            }
-
-        /* BADGE */
-        .badge {
-            background: rgba(56,189,248,.15);
-            color: #38bdf8;
-            border: 1px solid rgba(56,189,248,.3);
-            border-radius: 30px;
-            padding: 8px 14px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        /* CARD BODY */
-        .card-body {
-            background: #1e293b;
-        }
-
-        /* DATE */
-        .text-muted {
-            color: #94a3b8 !important;
-        }
-    </style>
-}
+</style>

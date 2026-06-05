@@ -5,359 +5,264 @@
     ViewData["Title"] = "Quản trị thành viên";
 }
 
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-<div class="container mt-5">
-
-    <div class="user-management-card shadow-lg border-0">
-
-        <!-- HEADER -->
-        <div class="card-header-custom">
-
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-
+<div class="container-fluid px-0">
+    <div class="card border-0">
+        <div class="card-header bg-white border-0 pt-4 pb-0">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                 <div>
-
-                    <h2 class="mb-0 text-white text-uppercase fw-bold">
-
-                        <i class="fas fa-users-cog me-2"></i>
-
-                        Quản trị hệ thống
-
-                    </h2>
-
-                    <small class="text-white-50">
-
-                        Tổng cộng @(Model?.Count() ?? 0) thành viên
-
-                    </small>
-
+                    <h3 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
+                        <i class="bi bi-people text-primary"></i>
+                        Quản Trị Thành Viên
+                    </h3>
+                    <p class="text-muted small mb-0">
+                        Quản lý phân quyền, theo dõi tài khoản và điều phối nhân sự trên hệ thống
+                    </p>
                 </div>
 
-                <!-- CREATE BUTTON -->
-                <a asp-action="Create"
-                   class="btn btn-light btn-sm fw-bold shadow-sm">
-
-                    <i class="fas fa-user-plus me-1"></i>
-
-                    Thêm mới
-
-                </a>
-
+                <div>
+                    <a asp-action="Create" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-person-plus-fill"></i>
+                        Thêm thành viên mới
+                    </a>
+                </div>
             </div>
-
         </div>
 
-        <!-- TABLE -->
-        <div class="table-responsive p-4">
-
-            <table class="table table-hover align-middle custom-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th class="text-center">ID</th>
-
-                        <th>Tài khoản</th>
-
-                        <th>Họ và tên</th>
-
-                        <th class="text-center">Vai trò</th>
-
-                        <th class="text-end">Hành động</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var user in Model)
+        <div class="card-body px-0 pt-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle custom-modern-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;" class="text-center ps-4">ID</th>
+                            <th style="width: 30%;">Tài khoản</th>
+                            <th style="width: 25%;">Họ và tên</th>
+                            <th style="width: 20%;" class="text-center">Vai trò</th>
+                            <th style="width: 15%;" class="text-end pe-4">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
                         {
-                            var firstChar = !string.IsNullOrEmpty(user.UserName)
-                            ? user.UserName.Substring(0, 1).ToUpper()
-                            : "?";
+                            foreach (var user in Model)
+                            {
+                                var firstChar = !string.IsNullOrEmpty(user.UserName)
+                                ? user.UserName.Substring(0, 1).ToUpper()
+                                : "?";
 
-                            bool isAdmin =
-                            user.Role != null &&
-                            (user.Role.Contains("Admin") ||
-                            user.Role.Contains("Quản"));
+                                bool isAdmin = user.Role != null &&
+                                (user.Role.Contains("Admin") || user.Role.Contains("Quản"));
 
-                            <tr>
+                                <tr>
+                                    <td class="text-center ps-4">
+                                        <span class="id-badge">
+                                            #@user.Id
+                                        </span>
+                                    </td>
 
-                                <!-- ID -->
-                                <td class="text-center fw-bold text-muted">
-                                    #@user.Id
-
-                                </td>
-                                <!-- USERNAME -->
-                                <td>
-
-                                    <div class="d-flex align-items-center">
-
-                                        <div class="avatar-circle me-3">
-
-                                            @firstChar
-
-                                        </div>
-
-                                        <div>
-
-                                            <div class="fw-semibold">
-
-                                                @user.UserName
-
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle-modern @(isAdmin ? "avatar-admin" : "avatar-user") me-3">
+                                                @firstChar
                                             </div>
-
+                                            <div>
+                                                <span class="fw-semibold text-dark block-username">
+                                                    @user.UserName
+                                                </span>
+                                            </div>
                                         </div>
+                                    </td>
 
+                                    <td>
+                                        <span class="text-secondary fw-medium">
+                                            @user.FullName
+                                        </span>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <span class="modern-role-badge @(isAdmin ? "role-admin" : "role-editor")">
+                                            <i class="bi @(isAdmin ? "bi-shield-check" : "bi-person") me-1"></i>
+                                            @user.Role
+                                        </span>
+                                    </td>
+
+                                    <td class="text-end pe-4">
+                                        <div class="d-inline-flex gap-2 justify-content-end">
+                                            <a asp-action="Edit" asp-route-id="@user.Id"
+                                               class="action-btn btn-edit" title="Chỉnh sửa tài khoản">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+
+                                            <a asp-action="Delete" asp-route-id="@user.Id"
+                                               class="action-btn btn-delete"
+                                               onclick="return confirm('Bạn có chắc chắn muốn xóa thành viên @user.UserName không?')" title="Xóa tài khoản">
+                                                <i class="bi bi-trash3"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="text-muted opacity-50 mb-3">
+                                        <i class="bi bi-people-xs" style="font-size: 3.5rem;"></i>
                                     </div>
-
+                                    <p class="text-secondary fw-medium mb-0">
+                                        Hệ thống chưa có tài khoản thành viên nào.
+                                    </p>
                                 </td>
-
-                                <!-- FULLNAME -->
-                                <td>
-
-                                    @user.FullName
-
-                                </td>
-
-                                <!-- ROLE -->
-                                <td class="text-center">
-                                    <span class="badge-custom @(isAdmin ? "badge-admin" : "badge-editor")">
-                                        <i class="fas @(isAdmin ? "fa-shield-halved" : "fa-user") me-1"></i>
-                                        @user.Role
-                                    </span>
-                                </td>
-                                <!-- ACTION -->
-                                <td class="text-end">
-
-                                    <!-- EDIT -->
-                                    <a asp-action="Edit"
-                                       asp-route-id="@user.Id"
-                                       class="btn btn-action btn-edit me-1"
-                                       title="Sửa">
-
-                                        <i class="fas fa-edit"></i>
-
-                                    </a>
-
-                                    <!-- DELETE -->
-                                    <a asp-action="Delete"
-                                       asp-route-id="@user.Id"
-                                       class="btn btn-action btn-delete"
-                                       title="Xóa"
-                                       onclick="return confirm('Bạn có chắc chắn muốn xóa thành viên @user.UserName không?')">
-
-                                        <i class="fas fa-trash"></i>
-
-                                    </a>
-
-                                </td>
-
                             </tr>
                         }
-                    }
-                    else
-                    {
-                        <tr>
-
-                            <td colspan="5"
-                                class="text-center py-5 text-muted">
-
-                                <i class="fas fa-users-slash fs-1 d-block mb-3"></i>
-
-                                Chưa có thành viên nào
-
-                            </td>
-
-                        </tr>
-                    }
-
-                </tbody>
-
-            </table>
-
+                    </tbody>
+                </table>
+            </div>
         </div>
 
+        <div class="card-footer bg-white border-top-0 py-3 d-flex justify-content-between align-items-center">
+            <span class="text-muted small fw-medium">
+                Tổng số nhân sự: <strong class="text-dark">@(Model?.Count() ?? 0)</strong> tài khoản liên kết
+            </span>
+        </div>
     </div>
-
 </div>
 
 <style>
-
-    :root {
-        --gold: #d4af37;
-        --gold-light: #f4d03f;
-        --dark: #111827;
-        --dark-card: #1f2937;
-        --border: #374151;
-    }
-
+    /* Đồng bộ màu nền nền tảng sáng */
     body {
-        background: #0f172a;
+        background: #f1f5f9 !important;
     }
 
-    /* CARD */
-    .user-management-card {
-        background: var(--dark-card);
-        border-radius: 24px;
-        overflow: hidden;
-        border: 1px solid var(--border);
-        box-shadow: 0 20px 40px rgba(0,0,0,.35);
-    }
-
-    /* HEADER */
-    .card-header-custom {
-        background: linear-gradient( 135deg, #b8860b, #f4d03f );
-        padding: 24px 30px;
-    }
-
-        .card-header-custom h3,
-        .card-header-custom h4,
-        .card-header-custom h5 {
-            color: white;
-            font-weight: 700;
-            margin: 0;
-        }
-
-    /* TABLE */
-    .custom-table {
+    /* Thiết kế phẳng cho Table */
+    .custom-modern-table {
+        border: none !important;
         margin-bottom: 0;
-        color: white;
     }
 
-        .custom-table thead th {
-            background: #111827;
-            color: #d4af37;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 12px;
-            border: none;
-            padding: 18px;
+        .custom-modern-table thead {
+            background: #f8fafc !important;
         }
 
-        .custom-table td {
-            padding: 18px;
-            border-bottom: 1px solid var(--border);
-            vertical-align: middle;
-        }
-
-        .custom-table tbody tr {
-            transition: .3s;
-        }
-
-            .custom-table tbody tr:hover {
-                background: #2a3441;
+            .custom-modern-table thead th {
+                color: #64748b !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 16px 14px !important;
+                border-bottom: 1px solid #e2e8f0 !important;
             }
 
-    /* AVATAR */
-    .avatar-circle {
-        width: 48px;
-        height: 48px;
+        .custom-modern-table tbody td {
+            padding: 14px 14px !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            color: #334155;
+        }
+
+        .custom-modern-table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+            .custom-modern-table tbody tr:hover {
+                background-color: #f8fafc !important;
+            }
+
+    /* ID Badge tối giản */
+    .id-badge {
+        background: #f1f5f9;
+        color: #64748b;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* Thiết kế Avatar Chữ Đại Diện */
+    .avatar-circle-modern {
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
-        background: rgba(212,175,55,.15);
-        color: var(--gold);
-        border: 2px solid rgba(212,175,55,.3);
-        font-weight: bold;
-        font-size: 18px;
+        font-weight: 700;
+        font-size: 15px;
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    /* BADGE */
-    .badge-custom {
-        padding: 8px 16px;
-        border-radius: 50px;
+    /* Avatar cho Admin (Tone Indigo/Blue) */
+    .avatar-admin {
+        background: #e0e7ff;
+        color: #4f46e5;
+        border: 1px solid #c7d2fe;
+    }
+
+    /* Avatar cho Editor/User (Tone Cyan/Teal) */
+    .avatar-user {
+        background: #ecfeff;
+        color: #0891b2;
+        border: 1px solid #c5f6fa;
+    }
+
+    /* Modern Role Badge */
+    .modern-role-badge {
+        padding: 6px 14px;
+        border-radius: 8px;
         font-size: 12px;
-        font-weight: 700;
-    }
-
-    .badge-admin {
-        background: rgba(239,68,68,.15);
-        color: #ef4444;
-        border: 1px solid rgba(239,68,68,.3);
-    }
-
-    .badge-editor {
-        background: rgba(212,175,55,.15);
-        color: var(--gold);
-        border: 1px solid rgba(212,175,55,.3);
-    }
-
-    /* ACTION BUTTON */
-    .btn-action {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        border: none;
+        font-weight: 600;
         display: inline-flex;
-        justify-content: center;
         align-items: center;
-        transition: .3s;
-        text-decoration: none;
     }
 
-    /* EDIT */
+    /* Badge Admin bảo mật đỏ nhẹ nhàng */
+    .role-admin {
+        background: #fff5f5;
+        color: #e53e3e;
+        border: 1px solid #fed7d7;
+    }
+
+    /* Badge Editor/User xanh dương tinh giản */
+    .role-editor {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #dcfce7;
+    }
+
+    /* Nút thao tác phẳng đồng bộ */
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 16px;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    /* Sửa */
     .btn-edit {
-        background: rgba(212,175,55,.15);
-        color: var(--gold);
+        background: #eff6ff;
+        color: #2563eb;
     }
 
         .btn-edit:hover {
-            background: var(--gold);
-            color: #111827;
-            transform: translateY(-3px);
+            background: #2563eb;
+            color: white;
+            transform: translateY(-2px);
         }
 
-    /* DELETE */
+    /* Xóa */
     .btn-delete {
-        background: rgba(239,68,68,.15);
+        background: #fef2f2;
         color: #ef4444;
     }
 
         .btn-delete:hover {
             background: #ef4444;
             color: white;
-            transform: translateY(-3px);
-        }
-
-    /* BUTTON ADD */
-    .btn-add-user {
-        background: var(--gold);
-        color: #111827;
-        border: none;
-        border-radius: 50px;
-        padding: 12px 24px;
-        font-weight: 700;
-        transition: .3s;
-    }
-
-        .btn-add-user:hover {
-            background: var(--gold-light);
             transform: translateY(-2px);
         }
-
-    /* TEXT */
-    .text-muted {
-        color: #9ca3af !important;
-    }
-
-    /* SCROLLBAR */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: var(--gold);
-        border-radius: 20px;
-    }
 </style>
