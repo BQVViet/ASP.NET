@@ -1,8 +1,10 @@
-﻿using CMS.Data;
+using Microsoft.AspNetCore.Authorization;
+using CMS.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize]
     public class OrderDetailController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -13,7 +15,7 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        // Danh sách chi tiết đơn hàng
+        // Danh s�ch chi ti?t don h�ng
         public IActionResult Index()
         {
             var orderDetails = _context.OrderDetails.ToList();

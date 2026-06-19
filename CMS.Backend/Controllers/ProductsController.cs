@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -20,15 +21,14 @@ namespace CMS.Backend.Controllers
         }
 
         // =================================================================
-        // 1. GET: api/products (SỬA LỖI: Dùng Select bóc tách cấu trúc vòng lặp)
+        // 1. GET: api/products (Lấy danh sách sản phẩm - KHÔNG BỊ LẶP)
         // =================================================================
         [HttpGet]
         public async Task<IActionResult> GetProducts()
         {
             try
             {
-                // Sử dụng .Select() để tạo một cấu trúc JSON phẳng, sạch sẽ
-                // Ngắt hoàn toàn liên kết vòng lặp từ CategoryProduct quay lại Products
+                // Sử dụng .Select() để bóc tách các trường cần thiết, ngắt hoàn toàn liên kết ngược
                 var products = await _context.Products
                     .AsNoTracking()
                     .Select(p => new
@@ -36,11 +36,11 @@ namespace CMS.Backend.Controllers
                         p.Id,
                         p.Name,
                         p.Price,
-                        p.Quantity,
+                        p.StockQuantity,
                         p.Description,
                         p.ImageUrl,
                         p.CategoryProductId,
-                        // Chỉ bốc tách các trường cần dùng của danh mục, không lấy danh sách liên kết ngược
+                        // Chỉ bốc tách thông tin danh mục cơ bản, bỏ qua list sản phẩm liên kết ngược
                         CategoryProduct = p.CategoryProduct != null ? new
                         {
                             p.CategoryProduct.Id,
@@ -59,75 +59,134 @@ namespace CMS.Backend.Controllers
         }
 
         // =================================================================
-        // 2. GET: api/products/{id} (SỬA LỖI: Áp dụng tương tự cho chi tiết)
+        // 2. GET: api/products/{id} (Lấy chi tiết 1 sản phẩm - KHÔNG BỊ LẶP)
         // =================================================================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {
-            var product = await _context.Products
-                .AsNoTracking()
-                .Where(p => p.Id == id)
-                .Select(p => new
-                {
-                    p.Id,
-                    p.Name,
-                    p.Price,
-                    p.Quantity,
-                    p.Description,
-                    p.ImageUrl,
-                    p.CategoryProductId,
-                    CategoryProduct = p.CategoryProduct != null ? new
-                    {
-                        p.CategoryProduct.Id,
-                        p.CategoryProduct.Name,
-                        p.CategoryProduct.Description
-                    } : null
-                })
-                .FirstOrDefaultAsync();
-
-            if (product == null)
+            try
             {
-                return NotFound(new { message = $"Không tìm thấy sản phẩm có ID = {id}" });
-            }
+                var product = await _context.Products
+                    .AsNoTracking()
+                    .Where(p => p.Id == id)
+                    .Select(p => new
+                    {
+                        p.Id,
+                        p.Name,
+                        p.Price,
+                        p.StockQuantity,
+                        p.Description,
+                        p.ImageUrl,
+                        p.CategoryProductId,
+                        CategoryProduct = p.CategoryProduct != null ? new
+                        {
+                            p.CategoryProduct.Id,
+                            p.CategoryProduct.Name,
+                            p.CategoryProduct.Description
+                        } : null
+                    })
+                    .FirstOrDefaultAsync();
 
-            return Ok(product);
+                if (product == null)
+                {
+                    return NotFound(new { message = $"Không tìm thấy sản phẩm có ID = {id}" });
+                }
+
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
+            }
         }
 
         // =================================================================
-        // Các hàm POST, PUT, DELETE giữ nguyên như cũ...
+        // 3. POST: api/products (Thêm mới sản phẩm)
         // =================================================================
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromBody] Product product)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                // Khi tạo mới, Frontend chỉ truyền dữ liệu thô (ví dụ: CategoryProductId), 
+                // hãy chắc chắn thuộc tính object liên kết được set về null để tránh EF hiểu lầm
+                product.CategoryProduct = null;
+
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+
+                // Trả về Route xem chi tiết của sản phẩm vừa tạo
+                return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi thêm sản phẩm: {ex.Message}");
+            }
         }
 
+        // =================================================================
+        // 4. PUT: api/products/{id} (Cập nhật sản phẩm)
+        // =================================================================
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product)
         {
-            if (id != product.Id) return BadRequest(new { message = "ID không khớp" });
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (id != product.Id)
+                return BadRequest(new { message = "ID sản phẩm không trùng khớp với đường dẫn URL" });
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            // Ngắt object liên kết để tránh lỗi tracking hoặc đè dữ liệu danh mục khi chỉ sửa sản phẩm
+            product.CategoryProduct = null;
             _context.Entry(product).State = EntityState.Modified;
-            try { await _context.SaveChangesAsync(); }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.Products.Any(e => e.Id == id)) return NotFound();
+                if (!_context.Products.Any(e => e.Id == id))
+                {
+                    return NotFound(new { message = $"Không tìm thấy sản phẩm có ID = {id} để cập nhật" });
+                }
                 throw;
             }
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi cập nhật sản phẩm: {ex.Message}");
+            }
+
+            return NoContent(); // Trả về 204 tượng trưng cho cập nhật thành công và không cần trả nội dung
         }
 
+        // =================================================================
+        // 5. DELETE: api/products/{id} (Xóa sản phẩm)
+        // =================================================================
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null) return NotFound();
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-            return Ok(new { message = "Xóa thành công" });
+            try
+            {
+                var product = await _context.Products.FindAsync(id);
+                if (product == null)
+                {
+                    return NotFound(new { message = $"Không tìm thấy sản phẩm có ID = {id} để xóa" });
+                }
+
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = $"Đã xóa thành công sản phẩm có ID = {id}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi xóa sản phẩm: {ex.Message}");
+            }
         }
     }
 }
+

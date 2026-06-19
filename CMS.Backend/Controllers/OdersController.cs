@@ -1,40 +1,41 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 using CMS.Data;
-using CMS.Data.Entities; // Đảm bảo namespace này chứa thực thể Order thực tế của bạn
+using CMS.Data.Entities; // �?m b?o namespace n�y ch?a th?c th? Order th?c t? c?a b?n
 
 namespace CMS.Backend.Controllers
 {
-    // 1. Định nghĩa đường dẫn gọi API. Thực tế sẽ là: https://localhost:xxxx/api/orders
+    // 1. �?nh nghia du?ng d?n g?i API. Th?c t? s? l�: https://localhost:xxxx/api/orders
     [Route("api/[controller]")]
 
-    // 2. Kích hoạt tính năng tự động kiểm tra dữ liệu đầu vào (Model Validation)
+    // 2. K�ch ho?t t�nh nang t? d?ng ki?m tra d? li?u d?u v�o (Model Validation)
     [ApiController]
 
-    // 3. Kế thừa ControllerBase để tối ưu cho cấu trúc Web API
+    // 3. K? th?a ControllerBase d? t?i uu cho c?u tr�c Web API
     public class OrdersController : ControllerBase
     {
-        // 4. Khai báo thực thể kết nối Cơ sở dữ liệu (Read-only)
+        // 4. Khai b�o th?c th? k?t n?i Co s? d? li?u (Read-only)
         private readonly ApplicationDbContext _context;
 
-        // 5. Hàm khởi tạo: Inject DBContext từ hệ thống vào Controller
+        // 5. H�m kh?i t?o: Inject DBContext t? h? th?ng v�o Controller
         public OrdersController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         // =================================================================
-        // 1. GET: api/orders (Lấy danh sách đơn hàng kèm thông tin khách hàng)
-        // URL thử nghiệm: GET https://localhost:xxxx/api/orders
+        // 1. GET: api/orders (L?y danh s�ch don h�ng k�m th�ng tin kh�ch h�ng)
+        // URL th? nghi?m: GET https://localhost:xxxx/api/orders
         // =================================================================
         [HttpGet]
         public async Task<IActionResult> GetOrders()
         {
             try
             {
-                // Sử dụng Include để lấy kèm thông tin Khách hàng (Customer) đặt đơn đó
+                // S? d?ng Include d? l?y k�m th�ng tin Kh�ch h�ng (Customer) d?t don d�
                 var orders = await _context.Orders
                     .Include(o => o.Customer)
                     .AsNoTracking()
@@ -44,13 +45,13 @@ namespace CMS.Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
+                return StatusCode(500, $"L?i h? th?ng: {ex.Message}");
             }
         }
 
         // =================================================================
-        // 2. GET: api/orders/{id} (Lấy chi tiết một đơn hàng theo ID)
-        // URL thử nghiệm: GET https://localhost:xxxx/api/orders/5
+        // 2. GET: api/orders/{id} (L?y chi ti?t m?t don h�ng theo ID)
+        // URL th? nghi?m: GET https://localhost:xxxx/api/orders/5
         // =================================================================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrderById(int id)
@@ -61,15 +62,15 @@ namespace CMS.Backend.Controllers
 
             if (order == null)
             {
-                return NotFound(new { message = $"Không tìm thấy đơn hàng có ID = {id}" });
+                return NotFound(new { message = $"Kh�ng t�m th?y don h�ng c� ID = {id}" });
             }
 
             return Ok(order);
         }
 
         // =================================================================
-        // 3. POST: api/orders (Tạo mới một đơn hàng)
-        // URL thử nghiệm: POST https://localhost:xxxx/api/orders (Dữ liệu trong Body)
+        // 3. POST: api/orders (T?o m?i m?t don h�ng)
+        // URL th? nghi?m: POST https://localhost:xxxx/api/orders (D? li?u trong Body)
         // =================================================================
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] Order order)
@@ -79,7 +80,7 @@ namespace CMS.Backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Tự động ghi nhận thời gian đặt hàng nếu phía Client không truyền lên
+            // T? d?ng ghi nh?n th?i gian d?t h�ng n?u ph�a Client kh�ng truy?n l�n
             if (order.OrderDate == default)
             {
                 order.OrderDate = DateTime.Now;
@@ -92,15 +93,15 @@ namespace CMS.Backend.Controllers
         }
 
         // =================================================================
-        // 4. PUT: api/orders/{id} (Cập nhật trạng thái / thông tin đơn hàng)
-        // URL thử nghiệm: PUT https://localhost:xxxx/api/orders/5
+        // 4. PUT: api/orders/{id} (C?p nh?t tr?ng th�i / th�ng tin don h�ng)
+        // URL th? nghi?m: PUT https://localhost:xxxx/api/orders/5
         // =================================================================
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrder(int id, [FromBody] Order order)
         {
             if (id != order.Id)
             {
-                return BadRequest(new { message = "ID đường dẫn và ID dữ liệu truyền lên không khớp" });
+                return BadRequest(new { message = "ID du?ng d?n v� ID d? li?u truy?n l�n kh�ng kh?p" });
             }
 
             if (!ModelState.IsValid)
@@ -118,7 +119,7 @@ namespace CMS.Backend.Controllers
             {
                 if (!_context.Orders.Any(e => e.Id == id))
                 {
-                    return NotFound(new { message = "Đơn hàng không tồn tại trên hệ thống để cập nhật" });
+                    return NotFound(new { message = "�on h�ng kh�ng t?n t?i tr�n h? th?ng d? c?p nh?t" });
                 }
                 throw;
             }
@@ -127,8 +128,8 @@ namespace CMS.Backend.Controllers
         }
 
         // =================================================================
-        // 5. DELETE: api/orders/{id} (Xóa đơn hàng)
-        // URL thử nghiệm: DELETE https://localhost:xxxx/api/orders/5
+        // 5. DELETE: api/orders/{id} (X�a don h�ng)
+        // URL th? nghi?m: DELETE https://localhost:xxxx/api/orders/5
         // =================================================================
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
@@ -136,16 +137,17 @@ namespace CMS.Backend.Controllers
             var order = await _context.Orders.FindAsync(id);
             if (order == null)
             {
-                return NotFound(new { message = "Đơn hàng đã bị xóa trước đó hoặc không tồn tại" });
+                return NotFound(new { message = "�on h�ng d� b? x�a tru?c d� ho?c kh�ng t?n t?i" });
             }
 
-            // Lưu ý: Đơn hàng này thường có ràng buộc khóa ngoại chặt chẽ với bảng OrderDetails.
-            // Nếu bạn muốn xóa đơn hàng, bạn cần cấu hình xóa Cascade trong DB 
-            // hoặc chủ động xóa các bản ghi liên quan trong bảng OrderDetails trước.
+            // Luu �: �on h�ng n�y thu?ng c� r�ng bu?c kh�a ngo?i ch?t ch? v?i b?ng OrderDetails.
+            // N?u b?n mu?n x�a don h�ng, b?n c?n c?u h�nh x�a Cascade trong DB 
+            // ho?c ch? d?ng x�a c�c b?n ghi li�n quan trong b?ng OrderDetails tru?c.
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Xóa đơn hàng thành công" });
+            return Ok(new { message = "X�a don h�ng th�nh c�ng" });
         }
     }
 }
+

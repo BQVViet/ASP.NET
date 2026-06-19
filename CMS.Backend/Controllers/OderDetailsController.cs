@@ -1,40 +1,41 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 using CMS.Data;
-using CMS.Data.Entities; // Đảm bảo namespace này chứa thực thể OrderDetail thực tế của bạn
+using CMS.Data.Entities; // �?m b?o namespace n�y ch?a th?c th? OrderDetail th?c t? c?a b?n
 
 namespace CMS.Backend.Controllers
 {
-    // 1. Định nghĩa đường dẫn gọi API. Thực tế sẽ là: https://localhost:xxxx/api/orderdetails
+    // 1. �?nh nghia du?ng d?n g?i API. Th?c t? s? l�: https://localhost:xxxx/api/orderdetails
     [Route("api/[controller]")]
 
-    // 2. Kích hoạt tính năng tự động kiểm tra dữ liệu đầu vào (Model Validation)
+    // 2. K�ch ho?t t�nh nang t? d?ng ki?m tra d? li?u d?u v�o (Model Validation)
     [ApiController]
 
-    // 3. Kế thừa ControllerBase tối ưu cho kiến trúc Web API trả về dữ liệu JSON
+    // 3. K? th?a ControllerBase t?i uu cho ki?n tr�c Web API tr? v? d? li?u JSON
     public class OrderDetailsController : ControllerBase
     {
-        // 4. Khai báo thực thể kết nối Cơ sở dữ liệu (Read-only)
+        // 4. Khai b�o th?c th? k?t n?i Co s? d? li?u (Read-only)
         private readonly ApplicationDbContext _context;
 
-        // 5. Hàm khởi tạo: Inject DBContext từ hệ thống vào Controller
+        // 5. H�m kh?i t?o: Inject DBContext t? h? th?ng v�o Controller
         public OrderDetailsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         // =================================================================
-        // 1. GET: api/orderdetails (Lấy toàn bộ danh sách chi tiết các đơn hàng)
-        // URL thử nghiệm: GET https://localhost:xxxx/api/orderdetails
+        // 1. GET: api/orderdetails (L?y to�n b? danh s�ch chi ti?t c�c don h�ng)
+        // URL th? nghi?m: GET https://localhost:xxxx/api/orderdetails
         // =================================================================
         [HttpGet]
         public async Task<IActionResult> GetOrderDetails()
         {
             try
             {
-                // Sử dụng Include để kéo theo thông tin Sản phẩm phục vụ cho giao diện hiển thị
+                // S? d?ng Include d? k�o theo th�ng tin S?n ph?m ph?c v? cho giao di?n hi?n th?
                 var orderDetails = await _context.OrderDetails
                     .Include(od => od.Product)
                     .AsNoTracking()
@@ -44,13 +45,13 @@ namespace CMS.Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
+                return StatusCode(500, $"L?i h? th?ng: {ex.Message}");
             }
         }
 
         // =================================================================
-        // 2. GET: api/orderdetails/by-order/{orderId} (Lấy danh sách sản phẩm thuộc một Đơn hàng cụ thể)
-        // URL thử nghiệm: GET https://localhost:xxxx/api/orderdetails/by-order/1
+        // 2. GET: api/orderdetails/by-order/{orderId} (L?y danh s�ch s?n ph?m thu?c m?t �on h�ng c? th?)
+        // URL th? nghi?m: GET https://localhost:xxxx/api/orderdetails/by-order/1
         // =================================================================
         [HttpGet("by-order/{orderId}")]
         public async Task<IActionResult> GetOrderDetailsByOrderId(int orderId)
@@ -63,15 +64,15 @@ namespace CMS.Backend.Controllers
 
             if (details == null || details.Count == 0)
             {
-                return NotFound(new { message = $"Không tìm thấy chi tiết sản phẩm nào cho mã đơn hàng = {orderId}" });
+                return NotFound(new { message = $"Kh�ng t�m th?y chi ti?t s?n ph?m n�o cho m� don h�ng = {orderId}" });
             }
 
             return Ok(details);
         }
 
         // =================================================================
-        // 3. GET: api/orderdetails/{id} (Lấy thông tin một dòng chi tiết theo ID)
-        // URL thử nghiệm: GET https://localhost:xxxx/api/orderdetails/5
+        // 3. GET: api/orderdetails/{id} (L?y th�ng tin m?t d�ng chi ti?t theo ID)
+        // URL th? nghi?m: GET https://localhost:xxxx/api/orderdetails/5
         // =================================================================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrderDetailById(int id)
@@ -82,15 +83,15 @@ namespace CMS.Backend.Controllers
 
             if (orderDetail == null)
             {
-                return NotFound(new { message = $"Không tìm thấy chi tiết đơn hàng có ID = {id}" });
+                return NotFound(new { message = $"Kh�ng t�m th?y chi ti?t don h�ng c� ID = {id}" });
             }
 
             return Ok(orderDetail);
         }
 
         // =================================================================
-        // 4. POST: api/orderdetails (Thêm một sản phẩm vào đơn hàng)
-        // URL thử nghiệm: POST https://localhost:xxxx/api/orderdetails (Dữ liệu trong Body)
+        // 4. POST: api/orderdetails (Th�m m?t s?n ph?m v�o don h�ng)
+        // URL th? nghi?m: POST https://localhost:xxxx/api/orderdetails (D? li?u trong Body)
         // =================================================================
         [HttpPost]
         public async Task<IActionResult> CreateOrderDetail([FromBody] OrderDetail orderDetail)
@@ -107,15 +108,15 @@ namespace CMS.Backend.Controllers
         }
 
         // =================================================================
-        // 5. PUT: api/orderdetails/{id} (Cập nhật số lượng / đơn giá trong chi tiết đơn hàng)
-        // URL thử nghiệm: PUT https://localhost:xxxx/api/orderdetails/5
+        // 5. PUT: api/orderdetails/{id} (C?p nh?t s? lu?ng / don gi� trong chi ti?t don h�ng)
+        // URL th? nghi?m: PUT https://localhost:xxxx/api/orderdetails/5
         // =================================================================
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrderDetail(int id, [FromBody] OrderDetail orderDetail)
         {
             if (id != orderDetail.Id)
             {
-                return BadRequest(new { message = "ID đường dẫn và ID dữ liệu truyền lên không khớp" });
+                return BadRequest(new { message = "ID du?ng d?n v� ID d? li?u truy?n l�n kh�ng kh?p" });
             }
 
             if (!ModelState.IsValid)
@@ -133,7 +134,7 @@ namespace CMS.Backend.Controllers
             {
                 if (!_context.OrderDetails.Any(e => e.Id == id))
                 {
-                    return NotFound(new { message = "Bản ghi chi tiết đơn hàng không tồn tại trên hệ thống" });
+                    return NotFound(new { message = "B?n ghi chi ti?t don h�ng kh�ng t?n t?i tr�n h? th?ng" });
                 }
                 throw;
             }
@@ -142,8 +143,8 @@ namespace CMS.Backend.Controllers
         }
 
         // =================================================================
-        // 6. DELETE: api/orderdetails/{id} (Xóa một sản phẩm khỏi đơn hàng)
-        // URL thử nghiệm: DELETE https://localhost:xxxx/api/orderdetails/5
+        // 6. DELETE: api/orderdetails/{id} (X�a m?t s?n ph?m kh?i don h�ng)
+        // URL th? nghi?m: DELETE https://localhost:xxxx/api/orderdetails/5
         // =================================================================
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrderDetail(int id)
@@ -151,13 +152,14 @@ namespace CMS.Backend.Controllers
             var orderDetail = await _context.OrderDetails.FindAsync(id);
             if (orderDetail == null)
             {
-                return NotFound(new { message = "Chi tiết đơn hàng không tồn tại hoặc đã bị xóa trước đó" });
+                return NotFound(new { message = "Chi ti?t don h�ng kh�ng t?n t?i ho?c d� b? x�a tru?c d�" });
             }
 
             _context.OrderDetails.Remove(orderDetail);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Xóa mặt hàng khỏi hóa đơn thành công" });
+            return Ok(new { message = "X�a m?t h�ng kh?i h�a don th�nh c�ng" });
         }
     }
 }
+

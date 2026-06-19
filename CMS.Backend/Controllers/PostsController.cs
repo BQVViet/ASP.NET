@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -20,15 +21,15 @@ namespace CMS.Backend.Controllers
         }
 
         // =================================================================
-        // 1. GET: api/posts (SỬA LỖI: Sử dụng Select để ngắt vòng lặp JSON)
+        // 1. GET: api/posts (S?A L?I: S? d?ng Select d? ng?t v�ng l?p JSON)
         // =================================================================
         [HttpGet]
         public async Task<IActionResult> GetPosts([FromQuery] bool latest = false)
         {
             try
             {
-                // Dùng .Select() để ánh xạ sang một Object ẩn danh (Anonymous Object)
-                // Cách này bóc tách dữ liệu ra khỏi thực thể gốc, loại bỏ hoàn toàn lỗi "object cycle"
+                // D�ng .Select() d? �nh x? sang m?t Object ?n danh (Anonymous Object)
+                // C�ch n�y b�c t�ch d? li?u ra kh?i th?c th? g?c, lo?i b? ho�n to�n l?i "object cycle"
                 var query = _context.Posts.AsNoTracking().Select(p => new
                 {
                     p.Id,
@@ -37,7 +38,7 @@ namespace CMS.Backend.Controllers
                     p.ImageUrl,
                     p.CreatedDate,
                     p.CategoryId,
-                    // Chỉ lấy các thông tin cần thiết từ Category, không bê nguyên cả thực thể Category vào
+                    // Ch? l?y c�c th�ng tin c?n thi?t t? Category, kh�ng b� nguy�n c? th?c th? Category v�o
                     Category = new
                     {
                         p.Category.Id,
@@ -60,12 +61,12 @@ namespace CMS.Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
+                return StatusCode(500, $"L?i h? th?ng: {ex.Message}");
             }
         }
 
         // =================================================================
-        // 2. GET: api/posts/{id} (SỬA LỖI: Dùng Select để ngắt vòng lặp chi tiết)
+        // 2. GET: api/posts/{id} (S?A L?I: D�ng Select d? ng?t v�ng l?p chi ti?t)
         // =================================================================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPostById(int id)
@@ -92,14 +93,14 @@ namespace CMS.Backend.Controllers
 
             if (post == null)
             {
-                return NotFound(new { message = $"Không tìm thấy bài viết có ID = {id}" });
+                return NotFound(new { message = $"Kh�ng t�m th?y b�i vi?t c� ID = {id}" });
             }
 
             return Ok(post);
         }
 
         // =================================================================
-        // 3. POST: api/posts (Giữ nguyên - Nhận thực thể Post để thêm mới)
+        // 3. POST: api/posts (Gi? nguy�n - Nh?n th?c th? Post d? th�m m?i)
         // =================================================================
         [HttpPost]
         public async Task<IActionResult> CreatePost([FromBody] Post post)
@@ -118,14 +119,14 @@ namespace CMS.Backend.Controllers
         }
 
         // =================================================================
-        // 4. PUT: api/posts/{id} (Giữ nguyên - Cập nhật thực thể Post)
+        // 4. PUT: api/posts/{id} (Gi? nguy�n - C?p nh?t th?c th? Post)
         // =================================================================
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePost(int id, [FromBody] Post post)
         {
             if (id != post.Id)
             {
-                return BadRequest(new { message = "ID đường dẫn và ID dữ liệu truyền lên không khớp" });
+                return BadRequest(new { message = "ID du?ng d?n v� ID d? li?u truy?n l�n kh�ng kh?p" });
             }
 
             if (!ModelState.IsValid)
@@ -143,7 +144,7 @@ namespace CMS.Backend.Controllers
             {
                 if (!_context.Posts.Any(e => e.Id == id))
                 {
-                    return NotFound(new { message = "Bài viết không tồn tại trên hệ thống để cập nhật" });
+                    return NotFound(new { message = "B�i vi?t kh�ng t?n t?i tr�n h? th?ng d? c?p nh?t" });
                 }
                 throw;
             }
@@ -152,7 +153,7 @@ namespace CMS.Backend.Controllers
         }
 
         // =================================================================
-        // 5. DELETE: api/posts/{id} (Giữ nguyên)
+        // 5. DELETE: api/posts/{id} (Gi? nguy�n)
         // =================================================================
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePost(int id)
@@ -160,13 +161,14 @@ namespace CMS.Backend.Controllers
             var post = await _context.Posts.FindAsync(id);
             if (post == null)
             {
-                return NotFound(new { message = "Bài viết đã bị xóa trước đó hoặc không tồn tại" });
+                return NotFound(new { message = "B�i vi?t d� b? x�a tru?c d� ho?c kh�ng t?n t?i" });
             }
 
             _context.Posts.Remove(post);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Xóa bài viết thành công" });
+            return Ok(new { message = "X�a b�i vi?t th�nh c�ng" });
         }
     }
 }
+

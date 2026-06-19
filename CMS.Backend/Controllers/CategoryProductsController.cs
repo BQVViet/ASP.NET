@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
@@ -34,9 +35,23 @@ namespace CMS.Backend.Controllers
         {
             try
             {
-                // Sử dụng AsNoTracking() để tăng tốc độ truy vấn đối với tác vụ chỉ đọc dữ liệu
+                // Sử dụng .Select() để tạo JSON phẳng, ngắt vòng lặp vô tận với Products
                 var categoriesProducts = await _context.CategoriesProducts
                     .AsNoTracking()
+                    .Select(c => new
+                    {
+                        c.Id,
+                        c.Name,
+                        c.Description,
+                        // Nếu muốn lấy thông tin cơ bản của các sản phẩm thuộc danh mục này
+                        Products = c.Products.Select(p => new
+                        {
+                            p.Id,
+                            p.Name,
+                            p.Price,
+                            p.ImageUrl
+                        }).ToList()
+                    })
                     .ToListAsync();
 
                 return Ok(categoriesProducts);
@@ -55,7 +70,23 @@ namespace CMS.Backend.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryProductById(int id)
         {
-            var categoryProduct = await _context.CategoriesProducts.FindAsync(id);
+            var categoryProduct = await _context.CategoriesProducts
+                .AsNoTracking()
+                .Where(c => c.Id == id)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Name,
+                    c.Description,
+                    Products = c.Products.Select(p => new
+                    {
+                        p.Id,
+                        p.Name,
+                        p.Price,
+                        p.ImageUrl
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
 
             // Nếu không tìm thấy ID khớp, trả về lỗi 404 chuẩn REST
             if (categoryProduct == null)
@@ -148,3 +179,4 @@ namespace CMS.Backend.Controllers
         }
     }
 }
+

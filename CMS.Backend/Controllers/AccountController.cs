@@ -1,4 +1,4 @@
-﻿using CMS.Data;
+using CMS.Data;
 using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.AspNetCore.Authentication;
@@ -60,7 +60,7 @@ namespace CMS.Backend.Controllers
                     new ClaimsPrincipal(claimsIdentity)
                 );
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Order");
             }
 
             ViewBag.Error = "Sai tài khoản hoặc mật khẩu!";
@@ -77,8 +77,8 @@ namespace CMS.Backend.Controllers
             );
 
             //return RedirectToAction("Login");
-            // Quay về Home
-            return RedirectToAction("Index", "Home");
+            // Quay về Login
+            return RedirectToAction("Login", "Account");
         }
 
         // =========================

@@ -1,7 +1,8 @@
-﻿@model IEnumerable<CMS.Data.Entities.Post>
+@model IEnumerable<CMS.Data.Entities.Post>
 
 @{
     ViewData["Title"] = "Hệ thống CMS - Dashboard";
+    Layout = "_LayoutAdmin";
 }
 
 <!-- Google Fonts & FontAwesome -->
@@ -11,38 +12,7 @@
 <div class="dashboard-wrapper">
     <div class="container-fluid px-4 py-4">
 
-        <!-- TOP BAR / HEADER -->
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-5">
-            <div class="d-flex align-items-center gap-3">
-                <div class="avatar-container">
-                    <img src="https://ui-avatars.com/api/?name=@(User.FindFirst("FullName")?.Value ?? "Guest")&background=6366f1&color=fff&size=100"
-                         class="rounded-circle-custom" alt="Avatar">
-                    <span class="status-indicator"></span>
-                </div>
-                <div>
-                    <span class="text-uppercase tracking-wider text-muted small fw-bold">Hệ thống quản trị</span>
-                    <h1 class="h2 fw-bold text-slate-800 m-0">Chào, @(User.FindFirst("FullName")?.Value ?? "Quản trị viên") 👋</h1>
-                </div>
-            </div>
 
-            <div class="d-flex gap-2">
-                <a href="https://learn.microsoft.com/aspnet/core" target="_blank" class="btn btn-modern-secondary">
-                    <i class="fab fa-microsoft me-2"></i> Tài liệu
-                </a>
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <a asp-controller="Account" asp-action="Logout" class="btn btn-modern-danger">
-                        <i class="fas fa-right-from-bracket me-2"></i> Đăng xuất
-                    </a>
-                }
-                else
-                {
-                    <a asp-controller="Account" asp-action="Login" class="btn btn-modern-primary">
-                        <i class="fas fa-right-to-bracket me-2"></i> Đăng nhập
-                    </a>
-                }
-            </div>
-        </div>
 
         <div class="row g-4">
             <!-- LEFT COLUMN: NAVIGATION & CONTROLS -->

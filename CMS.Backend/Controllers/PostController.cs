@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;
 using CMS.Data.Entities;
@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CMS.Backend.Controllers
 {
-    [Authorize] // Bắt buộc đăng nhập
+    [Authorize] // B?t bu?c dang nh?p
+    [Authorize]
     public class PostController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -18,7 +19,7 @@ namespace CMS.Backend.Controllers
         }
 
         // =========================
-        // DANH SÁCH BÀI VIẾT
+        // DANH S�CH B�I VI?T
         // =========================
         public IActionResult Index()
         {
@@ -31,7 +32,7 @@ namespace CMS.Backend.Controllers
         }
 
         // =========================
-        // CHI TIẾT
+        // CHI TI?T
         // =========================
         public IActionResult Details(int id)
         {
@@ -67,7 +68,7 @@ namespace CMS.Backend.Controllers
         [HttpPost]
         public IActionResult Create(Post model, IFormFile uploadImage)
         {
-            // Upload ảnh
+            // Upload ?nh
             if (uploadImage != null && uploadImage.Length > 0)
             {
                 string folder = Path.Combine(
@@ -178,7 +179,7 @@ namespace CMS.Backend.Controllers
             }
             else
             {
-                // giữ ảnh cũ
+                // gi? ?nh cu
                 var oldPost = _context.Posts
                     .AsNoTracking()
                     .FirstOrDefault(p => p.Id == model.Id);

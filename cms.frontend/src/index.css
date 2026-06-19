@@ -1,13 +1,252 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --primary: #007bff;
+  /* Bright blue from screenshot */
+  --primary-hover: #0056b3;
+  --dark: #1a1a1a;
+  --gray-bg: #f5f6f8;
+  --gray-text: #8e8e8e;
+  --white: #ffffff;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--white);
+  color: var(--dark);
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.brand-font {
+  font-family: 'Poppins', sans-serif;
+  color: var(--dark);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+p {
+  color: var(--gray-text);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--dark);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--primary);
+}
+
+/* Navbar */
+.navbar-glass {
+  background: var(--white) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 15px 0;
+}
+
+.navbar-glass .nav-link {
+  color: var(--dark) !important;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+  margin: 0 10px;
+}
+
+.navbar-glass .nav-link:hover {
+  color: var(--primary) !important;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.navbar-brand span {
+  font-weight: 400;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  border-radius: 50px;
+  /* Pill shape */
+  padding: 10px 24px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+.btn-outline-primary {
+  color: var(--primary);
+  border-color: var(--primary);
+  border-radius: 50px;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary);
+}
+
+/* Product Cards */
+.card {
+  background-color: var(--white) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+  color: var(--dark);
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+}
+
+.text-primary {
+  color: var(--primary) !important;
+}
+
+/* Gray circle wrapper for images */
+.img-wrapper {
+  background-color: var(--gray-bg);
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 20px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Rating Stars */
+.rating-stars {
+  color: #ffc107;
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+}
+
+/* Nav Pills (Tabs) */
+.nav-pills .nav-link {
+  border-radius: 50px;
+  color: var(--gray-text);
+  background: transparent;
+  margin: 0 5px;
+  font-weight: 500;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .nav-link:hover {
+  background-color: var(--primary) !important;
+  color: var(--white) !important;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
+
+/* Offcanvas */
+.offcanvas {
+  background-color: var(--white) !important;
+  color: var(--dark);
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Hero Section Specifics */
+.hero-title {
+  font-size: 4.5rem;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--gray-text);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.banner-dark {
+  background-color: #333;
+  border-radius: 30px;
+  color: white;
+}
+
+.icon-circle {
+  width: 60px;
+  height: 60px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px auto;
+  color: var(--dark);
+  font-size: 1.5rem;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+}
+
+/* Fade‑in animation */
+.animate-fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Hover transition for badge cards */
+.transition-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }

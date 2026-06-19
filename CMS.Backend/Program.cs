@@ -1,11 +1,19 @@
-﻿using CMS.Data;
+using CMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Text.Json.Serialization; // Thêm thư viện này để cấu hình ngắt vòng lặp JSON
 
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. CẤU HÌNH SERVICES
-builder.Services.AddControllersWithViews();
+
+// --- 🛠️ [SỬA ĐỔI]: Thêm AddJsonOptions để sửa TRIỆT ĐỂ lỗi vòng lặp (Object Cycle) toàn cục ---
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        // Tự động bỏ qua các vòng lặp liên kết ngược giữa Category và Product
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
 // --- 🔵 [BỔ SUNG 1]: Đăng ký dịch vụ tạo Swagger Docs ---
 builder.Services.AddEndpointsApiExplorer();
@@ -23,6 +31,18 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
 
+// ---- CẤU HÌNH CORS (THÊM VÀO TRƯỚC builder.Build()) ----
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // Cho phép ReactJS ở port 3000 gọi tới
+              .AllowAnyHeader()                     // Cho phép mọi loại Header (Content-Type, Authorization...)
+              .AllowAnyMethod()                     // Cho phép mọi phương thức HTTP (GET, POST, PUT, DELETE)
+              .AllowCredentials();                  // Hỗ trợ truyền Cookie/Session nếu cần sau này
+    });
+});
+
 var app = builder.Build();
 
 // 2. CẤU HÌNH MIDDLEWARE (PIPELINE)
@@ -33,7 +53,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        // Cấu hình này giúp trang Swagger hiển thị mượt mà trên cả dự án Web MVC
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "CMS API V1");
     });
 }
@@ -47,14 +66,21 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Bật Routing (Đã xóa 1 dòng trùng)
 app.UseRouting();
 
-// PHẢI CÓ
+// KÍCH HOẠT CORS (Nằm ngay sau UseRouting và trước Authentication/Authorization)
+app.UseCors("AllowReactApp");
+
+// XÁC THỰC DANH TÍNH (Phải nằm TRƯỚC Phân quyền)
 app.UseAuthentication();
+
+// PHÂN QUYỀN (Đã dọn dẹp dòng trùng lặp)
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Order}/{action=Index}/{id?}");
 
 app.Run();

@@ -1,9 +1,11 @@
-Ôªøusing CMS.Data;
+using Microsoft.AspNetCore.Authorization;
+using CMS.Data;
 using CMS.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize]
     public class CustomerController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -14,7 +16,7 @@ namespace CMS.Backend.Controllers
         }
 
         // =========================
-        // DANH S√ÅCH KH√ÅCH H√ÄNG
+        // DANH S¡CH KH¡CH H¿NG
         // =========================
         public IActionResult Index()
         {

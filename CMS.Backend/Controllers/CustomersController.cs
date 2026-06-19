@@ -1,40 +1,41 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 using CMS.Data;
-using CMS.Data.Entities; // Đảm bảo namespace này chứa thực thể Customer thực tế của bạn
+using CMS.Data.Entities; // �?m b?o namespace n�y ch?a th?c th? Customer th?c t? c?a b?n
 
 namespace CMS.Backend.Controllers
 {
-    // 1. Định nghĩa đường dẫn gọi API. Thực tế sẽ là: https://localhost:xxxx/api/customers
+    // 1. �?nh nghia du?ng d?n g?i API. Th?c t? s? l�: https://localhost:xxxx/api/customers
     [Route("api/[controller]")]
 
-    // 2. Kích hoạt tính năng tự động kiểm tra dữ liệu đầu vào (Model Validation)
+    // 2. K�ch ho?t t�nh nang t? d?ng ki?m tra d? li?u d?u v�o (Model Validation)
     [ApiController]
 
-    // 3. Kế thừa ControllerBase tối ưu cho kiến trúc Web API phục vụ dữ liệu dạng JSON
+    // 3. K? th?a ControllerBase t?i uu cho ki?n tr�c Web API ph?c v? d? li?u d?ng JSON
     public class CustomersController : ControllerBase
     {
-        // 4. Khai báo thực thể kết nối Cơ sở dữ liệu (Read-only)
+        // 4. Khai b�o th?c th? k?t n?i Co s? d? li?u (Read-only)
         private readonly ApplicationDbContext _context;
 
-        // 5. Hàm khởi tạo: Inject DBContext từ hệ thống vào Controller
+        // 5. H�m kh?i t?o: Inject DBContext t? h? th?ng v�o Controller
         public CustomersController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         // =================================================================
-        // 1. GET: api/customers (Lấy danh sách toàn bộ khách hàng)
-        // URL thử nghiệm: GET https://localhost:xxxx/api/customers
+        // 1. GET: api/customers (L?y danh s�ch to�n b? kh�ch h�ng)
+        // URL th? nghi?m: GET https://localhost:xxxx/api/customers
         // =================================================================
         [HttpGet]
         public async Task<IActionResult> GetCustomers()
         {
             try
             {
-                // Sử dụng AsNoTracking() để tăng tốc độ truy vấn đối với tác vụ chỉ đọc dữ liệu
+                // S? d?ng AsNoTracking() d? tang t?c d? truy v?n d?i v?i t�c v? ch? d?c d? li?u
                 var customers = await _context.Customers
                     .AsNoTracking()
                     .ToListAsync();
@@ -43,63 +44,63 @@ namespace CMS.Backend.Controllers
             }
             catch (Exception ex)
             {
-                // Trả về mã lỗi 500 nếu có sự cố kết nối database
-                return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
+                // Tr? v? m� l?i 500 n?u c� s? c? k?t n?i database
+                return StatusCode(500, $"L?i h? th?ng: {ex.Message}");
             }
         }
 
         // =================================================================
-        // 2. GET: api/customers/{id} (Lấy chi tiết một khách hàng theo ID)
-        // URL thử nghiệm: GET https://localhost:xxxx/api/customers/5
+        // 2. GET: api/customers/{id} (L?y chi ti?t m?t kh�ch h�ng theo ID)
+        // URL th? nghi?m: GET https://localhost:xxxx/api/customers/5
         // =================================================================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomerById(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
 
-            // Nếu không tìm thấy ID khớp, trả về lỗi 404 chuẩn REST
+            // N?u kh�ng t�m th?y ID kh?p, tr? v? l?i 404 chu?n REST
             if (customer == null)
             {
-                return NotFound(new { message = $"Không tìm thấy khách hàng có ID = {id}" });
+                return NotFound(new { message = $"Kh�ng t�m th?y kh�ch h�ng c� ID = {id}" });
             }
 
             return Ok(customer);
         }
 
         // =================================================================
-        // 3. POST: api/customers (Tạo mới một khách hàng / Đăng ký tài khoản)
-        // URL thử nghiệm: POST https://localhost:xxxx/api/customers (Dữ liệu gửi trong Body)
+        // 3. POST: api/customers (T?o m?i m?t kh�ch h�ng / �ang k� t�i kho?n)
+        // URL th? nghi?m: POST https://localhost:xxxx/api/customers (D? li?u g?i trong Body)
         // =================================================================
         [HttpPost]
         public async Task<IActionResult> CreateCustomer([FromBody] Customer customer)
         {
-            // Nếu dữ liệu gửi lên sai cấu trúc Model định nghĩa
+            // N?u d? li?u g?i l�n sai c?u tr�c Model d?nh nghia
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState); // Trả về lỗi 400 Bad Request
+                return BadRequest(ModelState); // Tr? v? l?i 400 Bad Request
             }
 
-            // Lưu ý: Trong thực tế, bạn nên mã hóa mật khẩu (bằng BCrypt hoặc Identity PasswordHasher) 
-            // trước khi lưu vào database: customer.Password = PasswordHasher.Hash(customer.Password);
+            // Luu �: Trong th?c t?, b?n n�n m� h�a m?t kh?u (b?ng BCrypt ho?c Identity PasswordHasher) 
+            // tru?c khi luu v�o database: customer.Password = PasswordHasher.Hash(customer.Password);
 
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
 
-            // Trả về mã trạng thái 201 Created kèm URL dẫn tới vị trí khách hàng vừa tạo
+            // Tr? v? m� tr?ng th�i 201 Created k�m URL d?n t?i v? tr� kh�ch h�ng v?a t?o
             return CreatedAtAction(nameof(GetCustomerById), new { id = customer.Id }, customer);
         }
 
         // =================================================================
-        // 4. PUT: api/customers/{id} (Cập nhật thông tin khách hàng)
-        // URL thử nghiệm: PUT https://localhost:xxxx/api/customers/5
+        // 4. PUT: api/customers/{id} (C?p nh?t th�ng tin kh�ch h�ng)
+        // URL th? nghi?m: PUT https://localhost:xxxx/api/customers/5
         // =================================================================
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCustomer(int id, [FromBody] Customer customer)
         {
-            // Kiểm tra tính đồng nhất của ID trên đường dẫn và trong Body dữ liệu gửi lên
+            // Ki?m tra t�nh d?ng nh?t c?a ID tr�n du?ng d?n v� trong Body d? li?u g?i l�n
             if (id != customer.Id)
             {
-                return BadRequest(new { message = "ID đường dẫn và ID dữ liệu truyền lên không khớp" });
+                return BadRequest(new { message = "ID du?ng d?n v� ID d? li?u truy?n l�n kh�ng kh?p" });
             }
 
             if (!ModelState.IsValid)
@@ -107,7 +108,7 @@ namespace CMS.Backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Đánh dấu thực thể customer này đã bị thay đổi để EF Core cập nhật
+            // ��nh d?u th?c th? customer n�y d� b? thay d?i d? EF Core c?p nh?t
             _context.Entry(customer).State = EntityState.Modified;
 
             try
@@ -116,21 +117,21 @@ namespace CMS.Backend.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                // Xử lý xung đột dữ liệu nếu khách hàng bị xóa bởi luồng khác lúc đang cập nhật
+                // X? l� xung d?t d? li?u n?u kh�ch h�ng b? x�a b?i lu?ng kh�c l�c dang c?p nh?t
                 if (!_context.Customers.Any(e => e.Id == id))
                 {
-                    return NotFound(new { message = "Khách hàng không tồn tại trên hệ thống để cập nhật" });
+                    return NotFound(new { message = "Kh�ch h�ng kh�ng t?n t?i tr�n h? th?ng d? c?p nh?t" });
                 }
                 throw;
             }
 
-            // Trả về mã phản hồi thành công trống dữ liệu 204 chuẩn REST
+            // Tr? v? m� ph?n h?i th�nh c�ng tr?ng d? li?u 204 chu?n REST
             return NoContent();
         }
 
         // =================================================================
-        // 5. DELETE: api/customers/{id} (Xóa tài khoản khách hàng)
-        // URL thử nghiệm: DELETE https://localhost:xxxx/api/customers/5
+        // 5. DELETE: api/customers/{id} (X�a t�i kho?n kh�ch h�ng)
+        // URL th? nghi?m: DELETE https://localhost:xxxx/api/customers/5
         // =================================================================
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
@@ -138,16 +139,17 @@ namespace CMS.Backend.Controllers
             var customer = await _context.Customers.FindAsync(id);
             if (customer == null)
             {
-                return NotFound(new { message = "Khách hàng đã bị xóa trước đó hoặc không tồn tại" });
+                return NotFound(new { message = "Kh�ch h�ng d� b? x�a tru?c d� ho?c kh�ng t?n t?i" });
             }
 
-            // Lưu ý: Nếu khách hàng này đã có đơn hàng bên bảng Orders, 
-            // DB sẽ báo lỗi khóa ngoại (Foreign Key Constraint). 
-            // Bạn có thể xử lý xóa cascade hoặc báo lỗi cho Client tùy theo nghiệp vụ.
+            // Luu �: N?u kh�ch h�ng n�y d� c� don h�ng b�n b?ng Orders, 
+            // DB s? b�o l?i kh�a ngo?i (Foreign Key Constraint). 
+            // B?n c� th? x? l� x�a cascade ho?c b�o l?i cho Client t�y theo nghi?p v?.
             _context.Customers.Remove(customer);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Xóa thông tin khách hàng thành công" });
+            return Ok(new { message = "X�a th�ng tin kh�ch h�ng th�nh c�ng" });
         }
     }
 }
+

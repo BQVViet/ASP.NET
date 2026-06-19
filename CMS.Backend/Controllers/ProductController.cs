@@ -1,4 +1,5 @@
-﻿using CMS.Data;
+using Microsoft.AspNetCore.Authorization;
+using CMS.Data;
 using CMS.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -26,6 +28,23 @@ namespace CMS.Backend.Controllers
                 .ToList();
 
             return View(products);
+        }
+
+        // =========================
+        // DETAILS
+        // =========================
+        public IActionResult Details(int id)
+        {
+            var product = _context.Products
+                .Include(p => p.CategoryProduct)
+                .FirstOrDefault(p => p.Id == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
         }
 
         // =========================

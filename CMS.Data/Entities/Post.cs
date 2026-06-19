@@ -1,4 +1,4 @@
-﻿namespace CMS.Data.Entities
+namespace CMS.Data.Entities
 {
     public class Post
     {
@@ -14,6 +14,7 @@
 
         public int CategoryId { get; set; }
 
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual Category? Category { get; set; }
     }
 }

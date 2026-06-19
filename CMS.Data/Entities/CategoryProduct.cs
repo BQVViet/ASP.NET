@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -16,6 +16,7 @@ namespace CMS.Data.Entities
         public string Name { get; set; }
         public string? Description { get; set; }
         // quan hệ: Một danh mục có nhiều sản phẩm
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual ICollection<Product> Products { get; set; }
     }
 }

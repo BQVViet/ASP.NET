@@ -1,40 +1,41 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 using CMS.Data;
-using CMS.Data.Entities; // Đảm bảo namespace này chứa thực thể Category thực tế của bạn
+using CMS.Data.Entities; // �?m b?o namespace n�y ch?a th?c th? Category th?c t? c?a b?n
 
 namespace CMS.Backend.Controllers
 {
-    // 1. Định nghĩa đường dẫn gọi API. Thực tế sẽ là: https://localhost:xxxx/api/categories
+    // 1. �?nh nghia du?ng d?n g?i API. Th?c t? s? l�: https://localhost:xxxx/api/categories
     [Route("api/[controller]")]
 
-    // 2. Kích hoạt tính năng kiểm tra dữ liệu đầu vào tự động (Model Validation)
+    // 2. K�ch ho?t t�nh nang ki?m tra d? li?u d?u v�o t? d?ng (Model Validation)
     [ApiController]
 
-    // 3. Kế thừa ControllerBase để tối ưu cho kiến trúc Web API (Không xử lý View giao diện)
+    // 3. K? th?a ControllerBase d? t?i uu cho ki?n tr�c Web API (Kh�ng x? l� View giao di?n)
     public class CategoriesController : ControllerBase
     {
-        // 4. Khai báo thực thể kết nối Cơ sở dữ liệu (Read-only)
+        // 4. Khai b�o th?c th? k?t n?i Co s? d? li?u (Read-only)
         private readonly ApplicationDbContext _context;
 
-        // 5. Hàm khởi tạo: Inject DBContext từ hệ thống vào Controller
+        // 5. H�m kh?i t?o: Inject DBContext t? h? th?ng v�o Controller
         public CategoriesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         // =================================================================
-        // 1. GET: api/categories (Lấy danh sách toàn bộ danh mục bài viết)
-        // URL thử nghiệm: GET https://localhost:xxxx/api/categories
+        // 1. GET: api/categories (L?y danh s�ch to�n b? danh m?c b�i vi?t)
+        // URL th? nghi?m: GET https://localhost:xxxx/api/categories
         // =================================================================
         [HttpGet]
         public async Task<IActionResult> GetCategories()
         {
             try
             {
-                // Sử dụng AsNoTracking() giúp tăng tốc độ truy vấn đối với tác vụ chỉ đọc dữ liệu
+                // S? d?ng AsNoTracking() gi�p tang t?c d? truy v?n d?i v?i t�c v? ch? d?c d? li?u
                 var categories = await _context.Categories
                     .AsNoTracking()
                     .ToListAsync();
@@ -43,60 +44,60 @@ namespace CMS.Backend.Controllers
             }
             catch (Exception ex)
             {
-                // Trả về mã lỗi 500 nếu có sự cố kết nối database
-                return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
+                // Tr? v? m� l?i 500 n?u c� s? c? k?t n?i database
+                return StatusCode(500, $"L?i h? th?ng: {ex.Message}");
             }
         }
 
         // =================================================================
-        // 2. GET: api/categories/{id} (Lấy chi tiết một danh mục theo ID)
-        // URL thử nghiệm: GET https://localhost:xxxx/api/categories/5
+        // 2. GET: api/categories/{id} (L?y chi ti?t m?t danh m?c theo ID)
+        // URL th? nghi?m: GET https://localhost:xxxx/api/categories/5
         // =================================================================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryById(int id)
         {
             var category = await _context.Categories.FindAsync(id);
 
-            // Nếu không tìm thấy ID khớp, trả về lỗi 404 chuẩn REST
+            // N?u kh�ng t�m th?y ID kh?p, tr? v? l?i 404 chu?n REST
             if (category == null)
             {
-                return NotFound(new { message = $"Không tìm thấy danh mục có ID = {id}" });
+                return NotFound(new { message = $"Kh�ng t�m th?y danh m?c c� ID = {id}" });
             }
 
             return Ok(category);
         }
 
         // =================================================================
-        // 3. POST: api/categories (Tạo mới một danh mục)
-        // URL thử nghiệm: POST https://localhost:xxxx/api/categories (Dữ liệu trong Body)
+        // 3. POST: api/categories (T?o m?i m?t danh m?c)
+        // URL th? nghi?m: POST https://localhost:xxxx/api/categories (D? li?u trong Body)
         // =================================================================
         [HttpPost]
         public async Task<IActionResult> CreateCategory([FromBody] Category category)
         {
-            // Nếu dữ liệu gửi lên sai cấu trúc Model định nghĩa
+            // N?u d? li?u g?i l�n sai c?u tr�c Model d?nh nghia
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState); // Trả về lỗi 400 Bad Request
+                return BadRequest(ModelState); // Tr? v? l?i 400 Bad Request
             }
 
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
-            // Trả về mã trạng thái 201 Created kèm URL dẫn tới vị trí danh mục vừa tạo
+            // Tr? v? m� tr?ng th�i 201 Created k�m URL d?n t?i v? tr� danh m?c v?a t?o
             return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
         }
 
         // =================================================================
-        // 4. PUT: api/categories/{id} (Cập nhật thông tin danh mục)
-        // URL thử nghiệm: PUT https://localhost:xxxx/api/categories/5
+        // 4. PUT: api/categories/{id} (C?p nh?t th�ng tin danh m?c)
+        // URL th? nghi?m: PUT https://localhost:xxxx/api/categories/5
         // =================================================================
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(int id, [FromBody] Category category)
         {
-            // Kiểm tra tính đồng nhất của ID trên đường dẫn và trong Body dữ liệu gửi lên
+            // Ki?m tra t�nh d?ng nh?t c?a ID tr�n du?ng d?n v� trong Body d? li?u g?i l�n
             if (id != category.Id)
             {
-                return BadRequest(new { message = "ID đường dẫn và ID dữ liệu truyền lên không khớp" });
+                return BadRequest(new { message = "ID du?ng d?n v� ID d? li?u truy?n l�n kh�ng kh?p" });
             }
 
             if (!ModelState.IsValid)
@@ -104,7 +105,7 @@ namespace CMS.Backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Đánh dấu thực thể category này đã bị thay đổi để EF Core cập nhật
+            // ��nh d?u th?c th? category n�y d� b? thay d?i d? EF Core c?p nh?t
             _context.Entry(category).State = EntityState.Modified;
 
             try
@@ -113,21 +114,21 @@ namespace CMS.Backend.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                // Xử lý xung đột dữ liệu nếu danh mục bị xóa bởi luồng khác lúc đang cập nhật
+                // X? l� xung d?t d? li?u n?u danh m?c b? x�a b?i lu?ng kh�c l�c dang c?p nh?t
                 if (!_context.Categories.Any(e => e.Id == id))
                 {
-                    return NotFound(new { message = "Danh mục không tồn tại trên hệ thống để cập nhật" });
+                    return NotFound(new { message = "Danh m?c kh�ng t?n t?i tr�n h? th?ng d? c?p nh?t" });
                 }
                 throw;
             }
 
-            // Trả về mã phản hồi thành công trống dữ liệu 204 chuẩn REST
+            // Tr? v? m� ph?n h?i th�nh c�ng tr?ng d? li?u 204 chu?n REST
             return NoContent();
         }
 
         // =================================================================
-        // 5. DELETE: api/categories/{id} (Xóa danh mục khỏi cơ sở dữ liệu)
-        // URL thử nghiệm: DELETE https://localhost:xxxx/api/categories/5
+        // 5. DELETE: api/categories/{id} (X�a danh m?c kh?i co s? d? li?u)
+        // URL th? nghi?m: DELETE https://localhost:xxxx/api/categories/5
         // =================================================================
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
@@ -135,15 +136,16 @@ namespace CMS.Backend.Controllers
             var category = await _context.Categories.FindAsync(id);
             if (category == null)
             {
-                return NotFound(new { message = "Danh mục đã bị xóa trước đó hoặc không tồn tại" });
+                return NotFound(new { message = "Danh m?c d� b? x�a tru?c d� ho?c kh�ng t?n t?i" });
             }
 
-            // Lưu ý: Nếu có ràng buộc khóa ngoại với bảng Posts, bạn cần xử lý 
-            // xóa các bài viết liên quan hoặc báo lỗi trước khi xóa danh mục này.
+            // Luu �: N?u c� r�ng bu?c kh�a ngo?i v?i b?ng Posts, b?n c?n x? l� 
+            // x�a c�c b�i vi?t li�n quan ho?c b�o l?i tru?c khi x�a danh m?c n�y.
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Xóa danh mục thành công" });
+            return Ok(new { message = "X�a danh m?c th�nh c�ng" });
         }
     }
 }
+

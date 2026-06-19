@@ -1,4 +1,4 @@
-﻿/*
+/*
  * HỌ TÊN: BÙI QUỐC VIỆT
  * MÃ SINH VIÊN: 2123110189
  * LỚP:
@@ -20,7 +20,8 @@ namespace CMS.Data.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public virtual ICollection<Post> Posts { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public virtual ICollection<Post>? Posts { get; set; }
 
 
     }

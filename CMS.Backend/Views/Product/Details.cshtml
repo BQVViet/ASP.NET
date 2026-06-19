@@ -1,0 +1,54 @@
+@model CMS.Data.Entities.Product
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Chi tiết sản phẩm";
+}
+
+<div class="container mt-4">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-header bg-primary text-white rounded-top-4 py-3 d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-info-circle me-2"></i> CHI TIẾT SẢN PHẨM</h4>
+            <a asp-action="Index" class="btn btn-light btn-sm rounded-pill"><i class="fas fa-arrow-left me-1"></i> Quay lại</a>
+        </div>
+        <div class="card-body p-5">
+            <div class="row">
+                <div class="col-md-5 text-center mb-4 mb-md-0">
+                    <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://via.placeholder.com/400x400?text=No+Image" : Model.ImageUrl)" 
+                         class="img-fluid rounded-4 shadow-sm" style="max-height: 400px; object-fit: cover;" alt="@Model.Name" />
+                </div>
+                <div class="col-md-7">
+                    <h2 class="fw-bold mb-3">@Model.Name</h2>
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <span class="badge bg-primary fs-6 me-3">@(Model.CategoryProduct?.Name ?? "Chưa phân loại")</span>
+                        <span class="text-danger fw-bold fs-4">@Model.Price.ToString("N0") ₫</span>
+                    </div>
+
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th class="text-muted ps-0" style="width: 150px;"><i class="fas fa-box me-2"></i>Tồn kho:</th>
+                                <td><span class="badge bg-success">@Model.StockQuantity</span> sản phẩm</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted ps-0"><i class="fas fa-align-left me-2"></i>Mô tả:</th>
+                                <td>@Model.Description</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="mt-5 d-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning rounded-pill px-4 text-white">
+                            <i class="fas fa-edit me-1"></i> Chỉnh sửa
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger rounded-pill px-4"
+                           onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này không?')">
+                            <i class="fas fa-trash me-1"></i> Xóa
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

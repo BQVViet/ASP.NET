@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -25,6 +25,7 @@ namespace CMS.Data.Entities
         public int CategoryProductId { get; set; }
 
         [ForeignKey("CategoryProductId")]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual CategoryProduct? CategoryProduct { get; set; }
 
 

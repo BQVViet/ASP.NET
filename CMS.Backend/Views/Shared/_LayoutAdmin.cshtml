@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
@@ -317,7 +317,7 @@
 
         <div class="sidebar-menu">
             <a asp-controller="Home" asp-action="Index">
-                <i class="bi bi-columns-gap"></i> Bảng điều khiển
+                <i class="bi bi-columns-gap"></i> Hệ thống quản trị
             </a>
             <a asp-controller="Category" asp-action="Index">
                 <i class="bi bi-folder2-open"></i> Quản lý Danh mục
@@ -325,9 +325,12 @@
             <a asp-controller="Post" asp-action="Index">
                 <i class="bi bi-journal-text"></i> Quản lý Bài viết
             </a>
-            <a asp-controller="User" asp-action="Index">
-                <i class="bi bi-shield-lock"></i> Quản lý Thành viên
-            </a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="User" asp-action="Index">
+                    <i class="bi bi-shield-lock"></i> Quản lý Thành viên
+                </a>
+            }
             <a asp-controller="CategoryProduct" asp-action="Index">
                 <i class="bi bi-collection"></i> Danh mục sản phẩm
             </a>

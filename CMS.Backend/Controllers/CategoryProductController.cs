@@ -1,8 +1,10 @@
-﻿using CMS.Data;
+using Microsoft.AspNetCore.Authorization;
+using CMS.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize]
     public class CategoryProductController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -13,7 +15,7 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        // Hiển thị danh sách
+        // Hi?n th? danh s�ch
         public IActionResult Index()
         {
             var data = _context.CategoriesProducts.ToList();
