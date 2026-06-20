@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using CMS.Data;
 using CMS.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +17,25 @@ namespace CMS.Backend.Controllers
         }
 
         // =========================
-        // DANH SÁCH KHÁCH HÀNG
+        // DANH SÃCH KHÃCH HÃ€NG
         // =========================
-        public IActionResult Index()
+        public IActionResult Index(string searchString, int page = 1)
         {
-            var customers = _context.Customers.ToList();
+            int pageSize = 10;
+            var query = _context.Customers.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(c => c.FullName.Contains(searchString) || 
+                                         c.Email.Contains(searchString) || 
+                                         c.Phone.Contains(searchString));
+            }
+
+            ViewBag.SearchString = searchString;
+
+            var customers = query
+                .OrderByDescending(c => c.Id)
+                .ToList();
 
             return View(customers);
         }
@@ -49,6 +64,25 @@ namespace CMS.Backend.Controllers
             }
 
             return View(model);
+        }
+
+        // =========================
+        // DETAILS
+        // =========================
+        [HttpGet]
+        public IActionResult Details(int id)
+        {
+            var customer = _context.Customers
+                .Include(c => c.Orders)
+                .ThenInclude(o => o.OrderDetails)
+                .FirstOrDefault(c => c.Id == id);
+
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            return View(customer);
         }
 
         // =========================

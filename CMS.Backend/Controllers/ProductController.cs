@@ -21,12 +21,31 @@ namespace CMS.Backend.Controllers
         // =========================
         // DANH SÁCH SẢN PHẨM
         // =========================
-        public IActionResult Index()
+        public IActionResult Index(string searchString, int? categoryId, int page = 1)
         {
-            var products = _context.Products
+            int pageSize = 10;
+            var productsQuery = _context.Products
                 .Include(p => p.CategoryProduct)
-                .ToList();
+                .AsQueryable();
 
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                productsQuery = productsQuery.Where(p => p.Name.Contains(searchString));
+            }
+
+            if (categoryId.HasValue)
+            {
+                productsQuery = productsQuery.Where(p => p.CategoryProductId == categoryId.Value);
+            }
+
+            ViewBag.SearchString = searchString;
+            ViewBag.CategoryId = categoryId;
+            ViewBag.CategoryList = new SelectList(_context.CategoriesProducts, "Id", "Name", categoryId);
+
+            var products = productsQuery
+                .OrderByDescending(p => p.Id)
+                .ToList();
+                
             return View(products);
         }
 
@@ -172,8 +191,11 @@ namespace CMS.Backend.Controllers
             }
             else
             {
-                // giữ ảnh cũ
-                model.ImageUrl = oldProduct.ImageUrl;
+                // giữ ảnh cũ NẾU người dùng không dán link ảnh mới vào ô ImageUrl
+                if (string.IsNullOrEmpty(model.ImageUrl))
+                {
+                    model.ImageUrl = oldProduct.ImageUrl;
+                }
             }
 
             _context.Products.Update(model);

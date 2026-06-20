@@ -1,136 +1,120 @@
-﻿@model CMS.Data.Entities.Post
+@model CMS.Data.Entities.Post
 
 @{
     Layout = "_LayoutAdmin";
     ViewData["Title"] = "Thêm bài viết";
 }
 
-<div class="container mt-4">
-
-    <div class="card shadow">
-
-        <div class="card-header bg-primary text-white">
-
-            <h4>
-                <i class="bi bi-file-earmark-plus"></i>
-                THÊM BÀI VIẾT MỚI
-            </h4>
-
+<div class="container mt-4 mb-5">
+    <div class="card shadow-sm border-0 rounded-4">
+        
+        <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold text-dark"><i class="fas fa-file-medical me-2 text-primary"></i> THÊM BÀI VIẾT MỚI</h6>
+            <a asp-action="Index" class="btn btn-light btn-sm rounded-pill fw-medium text-secondary border shadow-sm px-3">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại
+            </a>
         </div>
 
-        <div class="card-body">
-
-            <form asp-action="Create"
-                  method="post"
-                  enctype="multipart/form-data">
-
-                <div class="row">
-
+        <div class="card-body p-4 p-lg-5">
+            <form asp-action="Create" method="post" enctype="multipart/form-data" id="createForm">
+                <div class="row g-4">
+                    <!-- Left: Title and Content -->
                     <div class="col-md-8">
-
-                        <div class="mb-3">
-
-                            <label class="form-label fw-bold">
-                                Tiêu đề
-                            </label>
-
-                            <input asp-for="Title"
-                                   class="form-control" />
-
+                        <div class="mb-4">
+                            <label class="form-label fw-medium text-secondary" style="font-size: 13px;">Tiêu đề bài viết <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control form-control-sm fs-5 fw-medium" required placeholder="Nhập tiêu đề thật hấp dẫn..." />
                         </div>
 
                         <div class="mb-3">
-
-                            <label class="form-label fw-bold">
-                                Nội dung
-                            </label>
-
-                            <textarea asp-for="Content"
-                                      class="form-control"
-                                      rows="10"></textarea>
-
+                            <label class="form-label fw-medium text-secondary" style="font-size: 13px;">Nội dung chi tiết</label>
+                            <textarea asp-for="Content" class="form-control" rows="15"></textarea>
                         </div>
-
                     </div>
 
-                    <div class="col-md-4">
-
-                        <div class="mb-3">
-
-                            <label class="form-label fw-bold">
-                                Danh mục
-                            </label>
-
-                            <select asp-for="CategoryId"
-                                    asp-items="ViewBag.CategoryList"
-                                    class="form-select">
-
-                                <option value="">
-                                    -- Chọn danh mục --
-                                </option>
-
+                    <!-- Right: Meta Data -->
+                    <div class="col-md-4 border-start ps-md-4">
+                        <div class="mb-4">
+                            <label class="form-label fw-medium text-secondary" style="font-size: 13px;">Danh mục Blog <span class="text-danger">*</span></label>
+                            <select asp-for="CategoryId" asp-items="ViewBag.CategoryList" class="form-select form-select-sm" required>
+                                <option value="">-- Chọn danh mục --</option>
                             </select>
+                        </div>
 
+                        <div class="mb-4">
+                            <label class="form-label fw-medium text-secondary" style="font-size: 13px;">Ngày đăng</label>
+                            <input asp-for="CreatedDate" type="date" class="form-control form-control-sm" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        </div>
+
+                        <hr class="my-4" />
+                        
+                        <div class="d-flex gap-3 mb-3 align-items-center bg-light p-2 rounded">
+                            <img id="previewImage" src="https://via.placeholder.com/100?text=Preview" 
+                                 class="rounded border" style="width: 60px; height: 60px; object-fit: cover; background: #fff;" />
+                            <div style="font-size: 12px; color: #64748b;">Ảnh xem trước</div>
                         </div>
 
                         <div class="mb-3">
-
-                            <label class="form-label fw-bold">
-                                Upload ảnh
-                            </label>
-
-                            <input type="file"
-                                   name="uploadImage"
-                                   class="form-control" />
-
+                            <label class="form-label fw-medium text-secondary" style="font-size: 13px;">Tải ảnh bìa lên (Từ máy tính)</label>
+                            <input type="file" name="uploadImage" class="form-control form-control-sm" />
                         </div>
 
-                        <div class="mb-3">
+                        <div class="text-center my-3 text-muted" style="font-size: 12px;">- HOẶC -</div>
 
-                            <label class="form-label fw-bold">
-                                Ngày đăng
-                            </label>
-
-                            <input asp-for="CreatedDate"
-                                   type="date"
-                                   class="form-control"
-                                   value="@DateTime.Now.ToString("yyyy-MM-dd")" />
-
+                        <div class="mb-4">
+                            <label class="form-label fw-medium text-secondary" style="font-size: 13px;">Dán Link ảnh (URL)</label>
+                            <input asp-for="ImageUrl" id="ImageUrl" class="form-control form-control-sm" placeholder="https://..." />
                         </div>
-
-                        <button type="submit"
-                                class="btn btn-success w-100">
-
-                            <i class="bi bi-cloud-upload"></i>
-                            Lưu bài viết
-
-                        </button>
-
                     </div>
-
                 </div>
-
             </form>
-
         </div>
-
+        
+        <div class="card-footer bg-light border-top py-3 px-4 d-flex justify-content-end gap-2">
+            <a asp-action="Index" class="btn btn-light rounded-pill fw-medium border px-4 shadow-sm text-secondary">
+                Hủy bỏ
+            </a>
+            <button type="button" onclick="savePost()" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
+                <i class="fas fa-plus me-1"></i> Tạo bài viết
+            </button>
+        </div>
     </div>
-
 </div>
 
+<style>
+    body { background: #f8fafc; }
+    .form-control-sm { padding: 0.5rem 0.75rem; font-size: 14px; border-radius: 6px; }
+    .ck-editor__editable { min-height: 400px; }
+</style>
+
 @section Scripts {
-
-    <!-- CKEDITOR -->
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-
     <script>
-
+        let myEditor;
         ClassicEditor
             .create(document.querySelector('#Content'))
-            .catch(error => {
-                console.error(error);
-            });
+            .then(editor => { myEditor = editor; })
+            .catch(error => { console.error(error); });
 
+        function savePost() {
+            var form = document.getElementById('createForm');
+            if (myEditor) {
+                document.querySelector('#Content').value = myEditor.getData();
+            }
+            // Bypass all validations and force submit
+            form.submit();
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlInput = document.getElementById('ImageUrl');
+            const previewImg = document.getElementById('previewImage');
+            
+            if(urlInput && previewImg) {
+                urlInput.addEventListener('input', function() {
+                    const url = this.value.trim();
+                    if(url) { previewImg.src = url; } 
+                    else { previewImg.src = "https://via.placeholder.com/100?text=Preview"; }
+                });
+            }
+        });
     </script>
-
 }

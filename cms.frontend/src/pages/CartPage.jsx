@@ -49,16 +49,16 @@ function CartPage() {
                   </thead>
                   <tbody>
                     {cartItems.map((item) => (
-                      <tr key={item.id}>
+                      <tr key={item.cartItemId || item.id}>
                         <td className="px-4 py-3">
                           <div className="d-flex align-items-center">
                             {item.imageUrl ? (
-                              <Image 
-                                src={item.imageUrl} 
-                                alt={item.name} 
-                                rounded 
-                                className="me-3 border" 
-                                style={{ width: '80px', height: '80px', objectFit: 'contain', backgroundColor: '#fff' }} 
+                              <Image
+                                src={item.imageUrl}
+                                alt={item.name}
+                                rounded
+                                className="me-3 border"
+                                style={{ width: '80px', height: '80px', objectFit: 'contain', backgroundColor: '#fff' }}
                               />
                             ) : (
                               <div className="bg-light rounded me-3 d-flex align-items-center justify-content-center border" style={{ width: '80px', height: '80px' }}>
@@ -66,9 +66,15 @@ function CartPage() {
                               </div>
                             )}
                             <div>
-                              <Link to={`/product/${item.id}`} className="text-dark fw-bold text-decoration-none">
+                              <Link to={`/product/${item.id}`} className="text-dark fw-bold text-decoration-none d-block mb-1">
                                 {item.name}
                               </Link>
+                              {(item.selectedColor || item.selectedVersion) && (
+                                <div className="d-flex gap-2">
+                                  {item.selectedVersion && <span className="badge bg-light text-secondary border fw-normal">{item.selectedVersion}</span>}
+                                  {item.selectedColor && <span className="badge bg-light text-secondary border fw-normal">{item.selectedColor}</span>}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -77,28 +83,28 @@ function CartPage() {
                         </td>
                         <td className="py-3">
                           <div className="d-flex justify-content-center align-items-center">
-                            <Button 
-                              variant="outline-secondary" 
-                              size="sm" 
-                              className="px-2 py-0 rounded-circle" 
+                            <Button
+                              variant="outline-secondary"
+                              size="sm"
+                              className="px-2 py-0 rounded-circle"
                               style={{ width: '28px', height: '28px' }}
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              onClick={() => updateQuantity(item.cartItemId || item.id, item.quantity - 1)}
                             >
                               -
                             </Button>
-                            <Form.Control 
-                              type="text" 
-                              value={item.quantity} 
-                              readOnly 
-                              className="text-center mx-2 border-0 bg-transparent fw-bold" 
-                              style={{ width: '40px' }} 
+                            <Form.Control
+                              type="text"
+                              value={item.quantity}
+                              readOnly
+                              className="text-center mx-2 border-0 bg-transparent fw-bold"
+                              style={{ width: '40px' }}
                             />
-                            <Button 
-                              variant="outline-secondary" 
-                              size="sm" 
-                              className="px-2 py-0 rounded-circle" 
+                            <Button
+                              variant="outline-secondary"
+                              size="sm"
+                              className="px-2 py-0 rounded-circle"
                               style={{ width: '28px', height: '28px' }}
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              onClick={() => updateQuantity(item.cartItemId || item.id, item.quantity + 1)}
                             >
                               +
                             </Button>
@@ -108,7 +114,7 @@ function CartPage() {
                           {(item.price * item.quantity).toLocaleString('vi-VN')}₫
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <Button variant="link" className="text-danger p-0 shadow-none" onClick={() => removeFromCart(item.id)}>
+                          <Button variant="link" className="text-danger p-0 shadow-none" onClick={() => removeFromCart(item.cartItemId || item.id)}>
                             <i className="fas fa-trash-alt fs-5"></i>
                           </Button>
                         </td>
@@ -139,17 +145,17 @@ function CartPage() {
                   <span>Phí vận chuyển:</span>
                   <span className="fw-bold text-dark">Miễn phí</span>
                 </div>
-                
+
                 <hr className="bg-light" />
-                
+
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <span className="fs-5 fw-bold text-dark">Tổng cộng:</span>
                   <span className="fs-3 text-primary fw-bold">{cartTotal.toLocaleString('vi-VN')}₫</span>
                 </div>
-                
-                <Button variant="primary" size="lg" className="w-100 rounded-pill mb-3 fw-bold">
+
+                <Link to="/checkout" className="btn btn-primary btn-lg w-100 rounded-pill mb-3 fw-bold shadow-sm d-flex justify-content-center align-items-center">
                   Tiến Hành Thanh Toán
-                </Button>
+                </Link>
                 <Link to="/products" className="btn btn-outline-primary w-100 rounded-pill">
                   Tiếp Tục Mua Sắm
                 </Link>

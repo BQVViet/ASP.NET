@@ -1,108 +1,135 @@
-﻿@model IEnumerable<CMS.Data.Entities.CategoryProduct>
+@model IEnumerable<CMS.Data.Entities.CategoryProduct>
 
 @{
     Layout = "_LayoutAdmin";
 }
 
-<div class="container mt-5">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <div class="text-center mb-5">
+<div class="container mt-4">
 
-        <h2 class="fw-bold text-uppercase">
-            Danh mục sản phẩm
-        </h2>
+    <div class="customer-card shadow-sm border-0">
 
-        <p class="text-muted">
-            Tổng cộng @(Model?.Count() ?? 0) danh mục
-        </p>
-
-    </div>
-
-    <div class="row">
-
-        @if (Model != null && Model.Any())
-        {
-            foreach (var item in Model)
-            {
-                <div class="col-md-4 mb-4">
-
-                    <div class="card shadow border-0 rounded-4 h-100 category-card">
-
-                        <div class="card-body p-4">
-
-                            <div class="icon-box mb-3">
-                                <i class="bi bi-grid-fill"></i>
-                            </div>
-
-                            <h4 class="fw-bold">
-                                @item.Name
-                            </h4>
-
-                            <p class="text-muted">
-                                @item.Description
-                            </p>
-
-                        </div>
-
-                        <div class="card-footer bg-transparent border-0 px-4 pb-4">
-
-                            <button class="btn btn-primary w-100 rounded-pill">
-                                Xem chi tiết
-                            </button>
-
-                        </div>
-
-                    </div>
-
+        <!-- HEADER -->
+        <div class="header-custom">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h2 class="text-white fw-bold mb-1 fs-4">
+                        <i class="fas fa-tags me-2"></i>
+                        Danh sách danh mục sản phẩm
+                    </h2>
+                    <small class="text-white-50">
+                        Tổng cộng @(Model?.Count() ?? 0) danh mục SP
+                    </small>
                 </div>
-            }
-        }
-        else
-        {
-            <div class="col-12 text-center py-5">
-
-                <h4 class="text-muted">
-                    Chưa có danh mục nào
-                </h4>
-
+                <a asp-action="Create" class="btn btn-light fw-bold btn-sm rounded-pill px-3">
+                    <i class="fas fa-plus me-1"></i> Thêm danh mục SP
+                </a>
             </div>
-        }
+        </div>
 
+        <!-- TOOLBAR (AUTO-SEARCH) -->
+        <div class="bg-light p-2 px-3 border-bottom d-flex justify-content-between align-items-center">
+            <form method="get" asp-action="Index" class="d-flex flex-wrap gap-3 m-0 align-items-center w-100" id="filterForm">
+                <div class="position-relative" style="flex: 1; max-width: 400px;">
+                    <i class="fas fa-search position-absolute text-muted" style="top: 50%; left: 15px; transform: translateY(-50%);"></i>
+                    <input type="text" name="searchString" id="searchInput" value="@ViewBag.SearchString" class="form-control form-control-sm rounded-pill ps-5" placeholder="Tìm kiếm tên danh mục SP...">
+                </div>
+                @if (!string.IsNullOrEmpty((string)ViewBag.SearchString))
+                {
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3 ms-auto text-nowrap"><i class="fas fa-times me-1"></i> Xóa lọc</a>
+                }
+            </form>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-responsive p-0" style="max-height: calc(100vh - 280px); overflow-y: auto; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+            <table class="table align-middle table-hover custom-table mb-0" style="position: relative;">
+                <thead style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                    <tr>
+                        <th style="width: 10%;">ID</th>
+                        <th style="width: 30%;">Tên danh mục SP</th>
+                        <th style="width: 45%;">Mô tả chi tiết</th>
+                        <th class="text-center" style="width: 15%;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            var avatar = !string.IsNullOrEmpty(item.Name) ? item.Name.Substring(0, 1).ToUpper() : "?";
+                            <tr>
+                                <td class="fw-bold text-muted">#@item.Id</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle me-3">@avatar</div>
+                                        <span class="fw-semibold">@item.Name</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="d-inline-block text-truncate text-muted" style="max-width: 380px;">
+                                        @item.Description
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning text-white me-1" title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa không?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="fas fa-folder-minus fs-2 d-block mb-2"></i>
+                                Chưa có danh mục SP nào
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
-
 </div>
 
-<link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
 <style>
-
-    body {
-        background: #f1f5f9;
-    }
-
-    .category-card {
-        background: white;
-        border-radius: 24px;
-        border: none;
-        transition: .3s;
-        box-shadow: 0 10px 30px rgba(0,0,0,.06);
-    }
-
-        .category-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 40px rgba(0,0,0,.1);
-        }
-
-    .icon-box {
-        width: 75px;
-        height: 75px;
-        border-radius: 20px;
-        background: linear-gradient(135deg,#3b82f6,#2563eb);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 30px;
-    }
+    body { background: #f8f9fc; }
+    .customer-card { border-radius: 12px; overflow: hidden; background: white; }
+    .header-custom { background: linear-gradient(135deg, #4e73df, #224abe); padding: 1rem 1.5rem; }
+    .custom-table thead th { background: #f8f9fc; color: #4e73df; text-transform: uppercase; font-size: 12px; border-top: none; padding: 10px 15px; }
+    .custom-table tbody td { padding: 10px 15px; font-size: 14px; }
+    .avatar-circle { width: 35px; height: 35px; border-radius: 50%; background: #eaecf4; color: #4e73df; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+    .custom-table tbody tr { transition: all 0.2s ease; }
+    .custom-table tbody tr:hover { background: #fcfdff; transform: scale(1.002); }
+    .btn-warning { background: #f6c23e; border: none; }
+    .btn-warning:hover { background: #dda20a; }
+    .btn-danger { border: none; }
 </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("filterForm");
+        const searchInput = document.getElementById("searchInput");
+        let timeout = null;
+
+        if (searchInput) {
+            searchInput.addEventListener("input", function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    form.submit();
+                }, 500);
+            });
+            const len = searchInput.value.length;
+            if (len > 0) {
+                searchInput.focus();
+                searchInput.setSelectionRange(len, len);
+            }
+        }
+    });
+</script>

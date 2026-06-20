@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function LoginPage() {
@@ -10,6 +10,8 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const stateMessage = location.state?.message;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -37,14 +39,15 @@ function LoginPage() {
                 <p className="text-muted">Chào mừng trở lại XTRA Store</p>
               </div>
 
+              {stateMessage && <Alert variant="warning" className="text-start mb-4"><i className="fas fa-exclamation-triangle me-2"></i>{stateMessage}</Alert>}
               {error && <Alert variant="danger">{error}</Alert>}
 
               <Form onSubmit={handleLogin}>
                 <Form.Group className="mb-3 text-start">
-                  <Form.Label className="fw-bold text-muted small">Tài khoản</Form.Label>
+                  <Form.Label className="fw-bold text-muted small">Tên đăng nhập</Form.Label>
                   <Form.Control 
                     type="text" 
-                    placeholder="Nhập tên tài khoản" 
+                    placeholder="Nhập tên đăng nhập" 
                     className="p-3 bg-light border-0 rounded-3" 
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
@@ -78,7 +81,7 @@ function LoginPage() {
                 </Button>
 
                 <p className="text-muted small mb-0">
-                  Chưa có tài khoản? <a href="#" className="text-primary text-decoration-none fw-bold">Đăng ký ngay</a>
+                  Chưa có tài khoản? <Link to="/register" className="text-primary text-decoration-none fw-bold">Đăng ký ngay</Link>
                 </p>
               </Form>
             </div>

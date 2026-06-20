@@ -1,135 +1,87 @@
-﻿@model CMS.Data.Entities.Post
+@model CMS.Data.Entities.Post
 
 @{
+    Layout = "_LayoutAdmin";
     ViewData["Title"] = "Chi tiết bài viết";
 }
 
-<div class="container mt-5 mb-5">
-
-    <div class="row justify-content-center">
-
-        <div class="col-lg-8">
-
-            <!-- BACK BUTTON -->
-            <a asp-action="Index"
-               class="btn btn-link text-decoration-none p-0 mb-4 text-muted">
-
-                <i class="bi bi-arrow-left"></i>
-                Quay lại danh sách
-
+<div class="container mt-4 mb-5">
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-header bg-primary text-white rounded-top-4 py-2 px-3 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-semibold"><i class="fas fa-file-alt me-2"></i> CHI TIẾT BÀI VIẾT</h6>
+            <a asp-action="Index" class="btn btn-light btn-sm rounded-pill shadow-sm" style="font-size: 12px;">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại
             </a>
-
-            <!-- IMAGE -->
-            <div class="rounded-4 overflow-hidden shadow mb-4 detail-image">
-
-                <img src="@(string.IsNullOrEmpty(Model.ImageUrl)
-                                         ? "https://via.placeholder.com/1200x600?text=No+Image"
-                                         : Model.ImageUrl)"
-                     class="w-100 h-100 detail-img"
-                     alt="@Model.Title" />
-
-            </div>
-
-            <!-- CATEGORY -->
-            <span class="badge bg-primary px-3 py-2 mb-3">
-
-                @(Model.Category != null
-                                ? Model.Category.Name
-                                : "Không có danh mục")
-
-            </span>
-
-            <!-- TITLE -->
-            <h1 class="fw-bold mb-4 text-dark">
-
-                @Model.Title
-
-            </h1>
-
-            <!-- META -->
-            <div class="d-flex align-items-center flex-wrap mb-4 text-muted small">
-
-                <div class="me-4 mb-2">
-
-                    <i class="bi bi-calendar3 me-2"></i>
-
-                    @Model.CreatedDate.ToString("dd/MM/yyyy")
-
-                </div>
-
-                <div class="mb-2">
-
-                    <i class="bi bi-person-circle me-2"></i>
-
-                    Admin CMS
-
-                </div>
-
-            </div>
-
-            <!-- CONTENT -->
-            <div class="content-box shadow-sm rounded-4 p-4 bg-white">
-
-                <p class="lead text-dark mb-0 content-text">
-
-                    @Html.Raw(Model.Content)
-
-                </p>
-
-            </div>
-
-            <!-- ALERT -->
-            <div class="alert alert-light border rounded-4 mt-5 p-4 shadow-sm">
-
-                <h5 class="fw-bold mb-2">
-                    Bạn thấy bài viết này hữu ích?
-                </h5>
-
-                <p class="mb-0 small text-muted">
-                    Hãy chia sẻ kiến thức này đến bạn bè của bạn nhé!
-                </p>
-
-            </div>
-
         </div>
+        <div class="card-body p-3 p-lg-4">
+            <div class="row">
+                <!-- Cột trái: Ảnh bìa -->
+                <div class="col-md-4 text-center mb-4 mb-md-0">
+                    <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://via.placeholder.com/400x300?text=No+Image" : Model.ImageUrl)" 
+                         class="img-fluid rounded-4 shadow-sm" 
+                         style="max-height: 300px; max-width: 100%; object-fit: contain; background: #ffffff;" 
+                         alt="@Model.Title" />
+                </div>
+                
+                <!-- Cột phải: Thông tin & Nội dung -->
+                <div class="col-md-8 d-flex flex-column">
+                    <h4 class="fw-bold mb-2 text-dark">@Model.Title</h4>
+                    
+                    <div class="d-flex align-items-center mb-3 gap-3 flex-wrap" style="font-size: 13px;">
+                        <span class="badge bg-primary px-2 py-1 shadow-sm">@(Model.Category?.Name ?? "Chưa phân loại")</span>
+                        <span class="text-muted fw-medium"><i class="fas fa-calendar-alt me-1 text-primary"></i> @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</span>
+                        <span class="text-muted fw-medium"><i class="fas fa-user-circle me-1 text-primary"></i> Admin CMS</span>
+                    </div>
 
+                    <div class="content-box bg-light p-3 rounded-4 mb-3 flex-grow-1 border" style="max-height: 350px; overflow-y: auto; font-size: 14px;">
+                        <h6 class="fw-bold text-secondary mb-2 border-bottom border-secondary-subtle pb-2 text-uppercase" style="letter-spacing: 0.5px; font-size: 12px;">Nội dung chi tiết</h6>
+                        <div class="post-content text-dark" style="line-height: 1.6;">
+                            @Html.Raw(Model.Content)
+                        </div>
+                    </div>
+
+                    <div class="mt-auto d-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm rounded-pill px-4 text-white shadow-sm fw-semibold">
+                            <i class="fas fa-edit me-1"></i> Chỉnh sửa
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger btn-sm rounded-pill px-4 shadow-sm fw-semibold"
+                           onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?')">
+                            <i class="fas fa-trash-alt me-1"></i> Xóa
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
 </div>
 
-@section Scripts {
+<style>
+    body {
+        background: #f8fafc;
+    }
+    .post-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    .post-content p {
+        margin-bottom: 1rem;
+    }
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-    <style>
-
-        .detail-image {
-            height: 450px;
-        }
-
-        .detail-img {
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-            .detail-img:hover {
-                transform: scale(1.03);
-            }
-
-        .content-box {
-            border: 1px solid #f1f1f1;
-        }
-
-        .content-text {
-            line-height: 1.9;
-            text-align: justify;
-            font-size: 18px;
-        }
-
-        .badge {
-            font-size: 14px;
-            border-radius: 50px;
-        }
-    </style>
-}
+    /* Thanh trượt hiện đại, tinh tế */
+    .content-box::-webkit-scrollbar {
+        width: 6px;
+    }
+    .content-box::-webkit-scrollbar-track {
+        background: transparent; 
+    }
+    .content-box::-webkit-scrollbar-thumb {
+        background: #cbd5e1; 
+        border-radius: 10px;
+    }
+    .content-box::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8; 
+    }
+</style>

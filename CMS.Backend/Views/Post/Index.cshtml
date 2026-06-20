@@ -1,270 +1,152 @@
-﻿@model IEnumerable<CMS.Data.Entities.Post>
+@model IEnumerable<CMS.Data.Entities.Post>
 
 @{
     Layout = "_LayoutAdmin";
-    ViewData["Title"] = "Quản lý bài viết";
 }
 
-<div class="container-fluid px-0">
-    <div class="card border-0">
-        <div class="card-header bg-white border-0 pt-4 pb-0">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <div>
-                    <h3 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
-                        <i class="bi bi-journal-text text-primary"></i>
-                        Quản Lý Bài Viết
-                    </h3>
-                    <p class="text-muted small mb-0">
-                        Hệ thống điều phối, biên tập và phân loại nội dung tin tức trên nền tảng
-                    </p>
-                </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+<div class="container mt-4">
+
+    <div class="customer-card shadow-sm border-0">
+
+        <!-- HEADER -->
+        <div class="header-custom">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div>
-                    <a asp-action="Create" class="btn btn-primary d-inline-flex align-items-center gap-2">
-                        <i class="bi bi-plus-circle-fill"></i>
-                        Thêm bài viết mới
-                    </a>
+                    <h2 class="text-white fw-bold mb-1 fs-4">
+                        <i class="fas fa-newspaper me-2"></i>
+                        Danh sách bài viết
+                    </h2>
+                    <small class="text-white-50">
+                        Tổng cộng @(Model?.Count() ?? 0) bài viết
+                    </small>
                 </div>
+                <a asp-action="Create" class="btn btn-light fw-bold btn-sm rounded-pill px-3">
+                    <i class="fas fa-plus me-1"></i> Thêm bài viết
+                </a>
             </div>
         </div>
 
-        <div class="card-body px-0 pt-4">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle custom-modern-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 8%;" class="ps-4">Hình ảnh</th>
-                            <th style="width: 32%;">Tiêu đề bài viết</th>
-                            <th style="width: 15%;">Danh mục</th>
-                            <th style="width: 25%;">Nội dung tóm tắt</th>
-                            <th style="width: 10%;">Ngày đăng</th>
-                            <th style="width: 10%;" class="text-end pe-4">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Any())
-                        {
-                            foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="modern-thumbnail">
-                                            <img src="@(string.IsNullOrEmpty(item.ImageUrl)
-                                                         ? "https://via.placeholder.com/120x80?text=No+Image"
-                                                         : item.ImageUrl)"
-                                                 alt="@item.Title" />
-                                        </div>
-                                    </td>
+        <!-- TOOLBAR (AUTO-SEARCH + FILTER) -->
+        <div class="bg-light p-2 px-3 border-bottom d-flex justify-content-between align-items-center">
+            <form method="get" asp-action="Index" class="d-flex flex-wrap gap-3 m-0 align-items-center w-100" id="filterForm">
+                <div class="position-relative" style="flex: 1; max-width: 350px;">
+                    <i class="fas fa-search position-absolute text-muted" style="top: 50%; left: 15px; transform: translateY(-50%);"></i>
+                    <input type="text" name="searchString" id="searchInput" value="@ViewBag.SearchString" class="form-control form-control-sm rounded-pill ps-5" placeholder="Tìm kiếm tiêu đề...">
+                </div>
+                <select name="categoryId" id="filterSelect" class="form-select form-select-sm rounded-pill" style="max-width: 200px;" asp-items="ViewBag.CategoryList">
+                    <option value="">-- Tất cả danh mục --</option>
+                </select>
+                @if (!string.IsNullOrEmpty((string)ViewBag.SearchString) || ViewBag.CategoryId != null)
+                {
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3 ms-auto text-nowrap"><i class="fas fa-times me-1"></i> Xóa lọc</a>
+                }
+            </form>
+        </div>
 
-                                    <td>
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="fw-semibold text-dark text-decoration-none text-hover-primary line-clamp-2">
-                                            @item.Title
-                                        </a>
-                                    </td>
-
-                                    <td>
-                                        <span class="modern-badge">
-                                            @(item.Category != null ? item.Category.Name : "Không có danh mục")
-                                        </span>
-                                    </td>
-
-                                    <td>
-                                        <span class="text-secondary d-inline-block text-truncate-custom line-clamp-2">
-                                            @Html.Raw(item.Content)
-                                        </span>
-                                    </td>
-
-                                    <td class="text-secondary small">
-                                        <i class="bi bi-calendar3 me-1"></i>
-                                        @item.CreatedDate.ToString("dd/MM/yyyy")
-                                    </td>
-
-                                    <td class="text-end pe-4">
-                                        <div class="d-inline-flex gap-2 justify-content-end">
-                                            <a asp-action="Details" asp-route-id="@item.Id"
-                                               class="action-btn btn-view" title="Xem chi tiết">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-
-                                            <a asp-action="Edit" asp-route-id="@item.Id"
-                                               class="action-btn btn-edit" title="Chỉnh sửa">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-
-                                            <a asp-action="Delete" asp-route-id="@item.Id"
-                                               class="action-btn btn-delete"
-                                               onclick="return confirm('Chúng ta có chắc chắn muốn xóa bài viết này không?')" title="Xóa">
-                                                <i class="bi bi-trash3"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
+        <!-- TABLE -->
+        <div class="table-responsive p-0" style="max-height: calc(100vh - 280px); overflow-y: auto; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+            <table class="table align-middle table-hover custom-table mb-0" style="position: relative;">
+                <thead style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                    <tr>
+                        <th style="width: 5%;">ID</th>
+                        <th style="width: 15%;">Hình ảnh</th>
+                        <th style="width: 35%;">Tiêu đề</th>
+                        <th style="width: 15%;">Danh mục</th>
+                        <th style="width: 15%;">Ngày tạo</th>
+                        <th class="text-center" style="width: 15%;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
                         {
                             <tr>
-                                <td colspan="6" class="text-center py-5">
-                                    <div class="text-muted opacity-50 mb-3">
-                                        <i class="bi bi-journal-x" style="font-size: 3.5rem;"></i>
+                                <td class="fw-bold text-muted">#@item.Id</td>
+                                <td>
+                                    <div style="width: 60px; height: 60px; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; background: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "https://via.placeholder.com/60x60?text=No+Image" : item.ImageUrl)" alt="@item.Title" style="max-height: 100%; max-width: 100%; object-fit: contain;" />
                                     </div>
-                                    <p class="text-secondary fw-medium mb-0">
-                                        Hiện chưa có bài viết nào được đăng tải trên hệ thống.
-                                    </p>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">@item.Title</span>
+                                </td>
+                                <td>
+                                    @if(item.Category != null)
+                                    {
+                                        <span class="badge bg-info text-dark rounded-pill px-3">@item.Category.Name</span>
+                                    }
+                                </td>
+                                <td>@item.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="text-center">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white me-1" title="Chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning text-white me-1" title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
                                 </td>
                             </tr>
                         }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card-footer bg-white border-top-0 py-3 d-flex justify-content-between align-items-center">
-            <span class="text-muted small fw-medium">
-                Tổng cộng: <strong class="text-dark">@(Model?.Count() ?? 0)</strong> bài viết công khai
-            </span>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fas fa-file-alt fs-2 d-block mb-2"></i>
+                                Chưa có bài viết nào
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
 <style>
-    /* Reset nền body trắng sáng sạch sẽ */
-    body {
-        background: #f1f5f9 !important;
-    }
-
-    /* Thiết lập cấu trúc Table Modern */
-    .custom-modern-table {
-        border: none !important;
-        margin-bottom: 0;
-    }
-
-        .custom-modern-table thead {
-            background: #f8fafc !important;
-        }
-
-            .custom-modern-table thead th {
-                color: #64748b !important;
-                font-size: 12px !important;
-                font-weight: 600 !important;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                padding: 16px 14px !important;
-                border-bottom: 1px solid #e2e8f0 !important;
-            }
-
-        .custom-modern-table tbody td {
-            padding: 16px 14px !important;
-            border-bottom: 1px solid #f1f5f9 !important;
-            color: #334155;
-        }
-
-        .custom-modern-table tbody tr {
-            transition: background-color 0.2s ease;
-        }
-
-            .custom-modern-table tbody tr:hover {
-                background-color: #f8fafc !important;
-            }
-
-    /* Custom Thumbnail ảnh bài viết gọn gàng */
-    .modern-thumbnail {
-        width: 64px;
-        height: 44px;
-        border-radius: 8px;
-        overflow: hidden;
-        border: 1px solid #e2e8f0;
-        background: #f1f5f9;
-    }
-
-        .modern-thumbnail img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-    /* Kiểu dáng Badge phân loại */
-    .modern-badge {
-        background: #e0e7ff !important;
-        color: #4f46e5 !important;
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 600;
-        display: inline-block;
-        white-space: nowrap;
-    }
-
-    /* Hạn chế dòng chữ trong Table */
-    .line-clamp-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .text-truncate-custom p,
-    .text-truncate-custom div {
-        margin-bottom: 0 !important;
-        display: inline;
-    }
-
-    /* Thẻ điều hướng thao tác phẳng */
-    .action-btn {
-        width: 34px;
-        height: 34px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        text-decoration: none;
-        font-size: 15px;
-        transition: all 0.2s ease;
-        border: none;
-    }
-
-    /* Chi tiết (Xám nhạt) */
-    .btn-view {
-        background: #f1f5f9;
-        color: #475569;
-    }
-
-        .btn-view:hover {
-            background: #475569;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-    /* Sửa (Xanh dương) */
-    .btn-edit {
-        background: #eff6ff;
-        color: #2563eb;
-    }
-
-        .btn-edit:hover {
-            background: #2563eb;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-    /* Xóa (Đỏ) */
-    .btn-delete {
-        background: #fef2f2;
-        color: #ef4444;
-    }
-
-        .btn-delete:hover {
-            background: #ef4444;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-    /* Hiệu ứng liên kết */
-    .text-hover-primary {
-        transition: color 0.15s ease;
-    }
-
-        .text-hover-primary:hover {
-            color: #4f46e5 !important;
-        }
+    body { background: #f8f9fc; }
+    .customer-card { border-radius: 12px; overflow: hidden; background: white; }
+    .header-custom { background: linear-gradient(135deg, #4e73df, #224abe); padding: 1rem 1.5rem; }
+    .custom-table thead th { background: #f8f9fc; color: #4e73df; text-transform: uppercase; font-size: 12px; border-top: none; padding: 10px 15px; }
+    .custom-table tbody td { padding: 10px 15px; font-size: 14px; }
+    .custom-table tbody tr { transition: all 0.2s ease; }
+    .custom-table tbody tr:hover { background: #fcfdff; transform: scale(1.002); }
+    .btn-warning { background: #f6c23e; border: none; }
+    .btn-warning:hover { background: #dda20a; }
+    .btn-danger { border: none; }
 </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("filterForm");
+        const searchInput = document.getElementById("searchInput");
+        const filterSelect = document.getElementById("filterSelect");
+        let timeout = null;
+
+        if (searchInput) {
+            searchInput.addEventListener("input", function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    form.submit();
+                }, 500);
+            });
+            const len = searchInput.value.length;
+            if (len > 0) {
+                searchInput.focus();
+                searchInput.setSelectionRange(len, len);
+            }
+        }
+
+        if (filterSelect) {
+            filterSelect.addEventListener("change", function () {
+                form.submit();
+            });
+        }
+    });
+</script>

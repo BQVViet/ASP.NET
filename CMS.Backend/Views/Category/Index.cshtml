@@ -1,206 +1,135 @@
-﻿@model IEnumerable<CMS.Data.Entities.Category>
+@model IEnumerable<CMS.Data.Entities.Category>
 
 @{
-    ViewData["Title"] = "Quản lý danh mục";
-    Layout = "_LayoutAdmin"; // Hoặc tên Layout mới của bạn
+    Layout = "_LayoutAdmin";
 }
 
-<div class="container-fluid px-0">
-    <div class="card border-0">
-        <div class="card-header bg-white border-0 pt-4 pb-0">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <div>
-                    <h3 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
-                        <i class="bi bi-folder2-open text-primary"></i>
-                        Danh Sách Danh Mục
-                    </h3>
-                    <p class="text-muted small mb-0">
-                        Quản lý hệ thống cấu trúc phân loại bài viết và sản phẩm toàn sàn
-                    </p>
-                </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+<div class="container mt-4">
+
+    <div class="customer-card shadow-sm border-0">
+
+        <!-- HEADER -->
+        <div class="header-custom">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div>
-                    <a asp-action="Create" class="btn btn-primary d-inline-flex align-items-center gap-2">
-                        <i class="bi bi-plus-circle-fill"></i>
-                        Thêm danh mục mới
-                    </a>
+                    <h2 class="text-white fw-bold mb-1 fs-4">
+                        <i class="fas fa-folder-open me-2"></i>
+                        Danh sách danh mục
+                    </h2>
+                    <small class="text-white-50">
+                        Tổng cộng @(Model?.Count() ?? 0) danh mục
+                    </small>
                 </div>
+                <a asp-action="Create" class="btn btn-light fw-bold btn-sm rounded-pill px-3">
+                    <i class="fas fa-plus me-1"></i> Thêm danh mục
+                </a>
             </div>
         </div>
 
-        <div class="card-body px-0 pt-4">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle custom-modern-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 10%;" class="ps-4">ID</th>
-                            <th style="width: 30%;">Tên danh mục</th>
-                            <th style="width: 40%;">Mô tả chi tiết</th>
-                            <th style="width: 20%;" class="text-end pe-4">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Any())
+        <!-- TOOLBAR (AUTO-SEARCH) -->
+        <div class="bg-light p-2 px-3 border-bottom d-flex justify-content-between align-items-center">
+            <form method="get" asp-action="Index" class="d-flex flex-wrap gap-3 m-0 align-items-center w-100" id="filterForm">
+                <div class="position-relative" style="flex: 1; max-width: 400px;">
+                    <i class="fas fa-search position-absolute text-muted" style="top: 50%; left: 15px; transform: translateY(-50%);"></i>
+                    <input type="text" name="searchString" id="searchInput" value="@ViewBag.SearchString" class="form-control form-control-sm rounded-pill ps-5" placeholder="Tìm kiếm tên danh mục...">
+                </div>
+                @if (!string.IsNullOrEmpty((string)ViewBag.SearchString))
+                {
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3 ms-auto text-nowrap"><i class="fas fa-times me-1"></i> Xóa lọc</a>
+                }
+            </form>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-responsive p-0" style="max-height: calc(100vh - 280px); overflow-y: auto; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+            <table class="table align-middle table-hover custom-table mb-0" style="position: relative;">
+                <thead style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                    <tr>
+                        <th style="width: 10%;">ID</th>
+                        <th style="width: 30%;">Tên danh mục</th>
+                        <th style="width: 45%;">Mô tả chi tiết</th>
+                        <th class="text-center" style="width: 15%;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
                         {
-                            foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td class="ps-4">
-                                        <span class="modern-badge">
-                                            #@item.Id
-                                        </span>
-                                    </td>
-
-                                    <td>
-                                        <span class="fw-semibold text-dark text-hover-primary">
-                                            @item.Name
-                                        </span>
-                                    </td>
-
-                                    <td>
-                                        <span class="text-secondary d-inline-block text-truncate" style="max-width: 380px;">
-                                            @item.Description
-                                        </span>
-                                    </td>
-
-                                    <td class="text-end pe-4">
-                                        <div class="d-inline-flex gap-2 justify-content-end">
-                                            <a asp-action="Edit" asp-route-id="@item.Id"
-                                               class="action-btn btn-edit" title="Chỉnh sửa">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-
-                                            <a asp-action="Delete" asp-route-id="@item.Id"
-                                               class="action-btn btn-delete"
-                                               onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?')" title="Xóa">
-                                                <i class="bi bi-trash3"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
+                            var avatar = !string.IsNullOrEmpty(item.Name) ? item.Name.Substring(0, 1).ToUpper() : "?";
                             <tr>
-                                <td colspan="4" class="text-center py-5">
-                                    <div class="text-muted opacity-50 mb-3">
-                                        <i class="bi bi-folder-x" style="font-size: 3.5rem;"></i>
+                                <td class="fw-bold text-muted">#@item.Id</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle me-3">@avatar</div>
+                                        <span class="fw-semibold">@item.Name</span>
                                     </div>
-                                    <p class="text-secondary fw-medium mb-0">
-                                        Chưa có danh mục nào tồn tại trên hệ thống.
-                                    </p>
+                                </td>
+                                <td>
+                                    <span class="d-inline-block text-truncate text-muted" style="max-width: 380px;">
+                                        @item.Description
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning text-white me-1" title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa không?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
                                 </td>
                             </tr>
                         }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card-footer bg-white border-top-0 py-3 d-flex justify-content-between align-items-center">
-            <span class="text-muted small fw-medium">
-                Tổng số bản ghi: <strong class="text-dark">@Model.Count()</strong> danh mục
-            </span>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="fas fa-folder-minus fs-2 d-block mb-2"></i>
+                                Chưa có danh mục nào
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
 <style>
-    /* Loại bỏ background cũ của file view */
-    body {
-        background: #f1f5f9 !important;
-    }
-
-    /* Tối ưu hóa Table theo phong cách Modern Clean */
-    .custom-modern-table {
-        border: none !important;
-        margin-bottom: 0;
-    }
-
-        .custom-modern-table thead {
-            background: #f8fafc !important;
-        }
-
-            .custom-modern-table thead th {
-                color: #64748b !important;
-                font-size: 12px !important;
-                font-weight: 600 !important;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                padding: 16px 14px !important;
-                border-bottom: 1px solid #e2e8f0 !important;
-            }
-
-        .custom-modern-table tbody td {
-            padding: 16px 14px !important;
-            border-bottom: 1px solid #f1f5f9 !important;
-            color: #334155;
-        }
-
-        .custom-modern-table tbody tr {
-            transition: background-color 0.2s ease;
-        }
-
-            .custom-modern-table tbody tr:hover {
-                background-color: #f8fafc !important;
-            }
-
-    /* Kiểu dáng Badge ID mới */
-    .modern-badge {
-        background: #e0e7ff !important;
-        color: #4f46e5 !important;
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 600;
-        display: inline-block;
-    }
-
-    /* Custom các nút thao tác gọn gàng */
-    .action-btn {
-        width: 36px;
-        height: 36px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 10px;
-        text-decoration: none;
-        font-size: 16px;
-        transition: all 0.2s ease;
-        border: none;
-    }
-
-    /* Nút sửa màu xanh dương nhạt */
-    .btn-edit {
-        background: #eff6ff;
-        color: #2563eb;
-    }
-
-        .btn-edit:hover {
-            background: #2563eb;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-    /* Nút xóa màu đỏ hồng nhạt */
-    .btn-delete {
-        background: #fef2f2;
-        color: #ef4444;
-    }
-
-        .btn-delete:hover {
-            background: #ef4444;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-    /* Text link hiệu ứng hover nhẹ */
-    .text-hover-primary {
-        transition: color 0.15s ease;
-    }
-
-        .text-hover-primary:hover {
-            color: #4f46e5 !important;
-        }
+    body { background: #f8f9fc; }
+    .customer-card { border-radius: 12px; overflow: hidden; background: white; }
+    .header-custom { background: linear-gradient(135deg, #4e73df, #224abe); padding: 1rem 1.5rem; }
+    .custom-table thead th { background: #f8f9fc; color: #4e73df; text-transform: uppercase; font-size: 12px; border-top: none; padding: 10px 15px; }
+    .custom-table tbody td { padding: 10px 15px; font-size: 14px; }
+    .avatar-circle { width: 35px; height: 35px; border-radius: 50%; background: #eaecf4; color: #4e73df; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+    .custom-table tbody tr { transition: all 0.2s ease; }
+    .custom-table tbody tr:hover { background: #fcfdff; transform: scale(1.002); }
+    .btn-warning { background: #f6c23e; border: none; }
+    .btn-warning:hover { background: #dda20a; }
+    .btn-danger { border: none; }
 </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("filterForm");
+        const searchInput = document.getElementById("searchInput");
+        let timeout = null;
+
+        if (searchInput) {
+            searchInput.addEventListener("input", function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    form.submit();
+                }, 500);
+            });
+            const len = searchInput.value.length;
+            if (len > 0) {
+                searchInput.focus();
+                searchInput.setSelectionRange(len, len);
+            }
+        }
+    });
+</script>

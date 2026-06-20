@@ -1,177 +1,222 @@
-﻿@model IEnumerable<CMS.Data.Entities.Order>
+@model IEnumerable<CMS.Data.Entities.Order>
 
 @{
     Layout = "_LayoutAdmin";
 }
 
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<div class="container mt-5">
+<div class="container mt-4">
 
-    <div class="order-card shadow-lg border-0">
+    <div class="customer-card shadow-sm border-0">
 
         <!-- HEADER -->
         <div class="header-custom">
-
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-
                 <div>
-
-                    <h2 class="text-white fw-bold mb-1">
+                    <h2 class="text-white fw-bold mb-1 fs-4">
                         <i class="fas fa-cart-shopping me-2"></i>
                         Quản lý đơn hàng
                     </h2>
-
                     <small class="text-white-50">
                         Tổng cộng @(Model?.Count() ?? 0) đơn hàng
                     </small>
-
                 </div>
-
-                <button class="btn btn-light btn-sm fw-bold">
-
-                    <i class="fas fa-plus me-1"></i>
-                    Tạo đơn hàng
-
-                </button>
-
+                <div class="d-flex align-items-center gap-2">
+                    <div class="dropdown">
+                        <button class="btn btn-light fw-bold btn-sm rounded-pill px-3 dropdown-toggle text-primary shadow-sm" type="button" id="printDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-print me-1"></i> In Hóa Đơn
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3" aria-labelledby="printDropdown">
+                            <li><a class="dropdown-item py-2 fw-medium" href="#" onclick="printSelected(event)"><i class="fas fa-check-square me-2 text-primary"></i> In theo lựa chọn</a></li>
+                            <li><a class="dropdown-item py-2 fw-medium" href="#" onclick="printAll(event)"><i class="fas fa-list me-2 text-success"></i> In tất cả (đang lọc)</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
+        </div>
 
+        <!-- TOOLBAR (AUTO-SEARCH + FILTER) -->
+        <div class="bg-light p-2 px-3 border-bottom d-flex justify-content-between align-items-center">
+            <form method="get" asp-action="Index" class="d-flex flex-wrap gap-3 m-0 align-items-center w-100" id="filterForm">
+                <div class="position-relative" style="flex: 1; max-width: 350px;">
+                    <i class="fas fa-search position-absolute text-muted" style="top: 50%; left: 15px; transform: translateY(-50%);"></i>
+                    <input type="text" name="searchString" id="searchInput" value="@ViewBag.SearchString" class="form-control form-control-sm rounded-pill ps-5" placeholder="Tìm kiếm mã đơn, ghi chú...">
+                </div>
+                <select name="status" id="filterSelect" class="form-select form-select-sm rounded-pill" style="max-width: 200px;">
+                    @if(ViewBag.Status == null) {
+                        <option value="" selected>-- Tất cả trạng thái --</option>
+                    } else {
+                        <option value="">-- Tất cả trạng thái --</option>
+                    }
+                    
+                    @if(ViewBag.Status != null && ViewBag.Status == 0) {
+                        <option value="0" selected>Chờ xử lý</option>
+                    } else {
+                        <option value="0">Chờ xử lý</option>
+                    }
+
+                    @if(ViewBag.Status != null && ViewBag.Status == 1) {
+                        <option value="1" selected>Đang giao</option>
+                    } else {
+                        <option value="1">Đang giao</option>
+                    }
+
+                    @if(ViewBag.Status != null && ViewBag.Status == 2) {
+                        <option value="2" selected>Hoàn thành</option>
+                    } else {
+                        <option value="2">Hoàn thành</option>
+                    }
+
+                    @if(ViewBag.Status != null && ViewBag.Status == -1) {
+                        <option value="-1" selected>Đã hủy</option>
+                    } else {
+                        <option value="-1">Đã hủy</option>
+                    }
+                </select>
+                @if (ViewBag.SearchString != null || ViewBag.Status != null)
+                {
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3 ms-auto text-nowrap"><i class="fas fa-times me-1"></i> Xóa lọc</a>
+                }
+            </form>
         </div>
 
         <!-- TABLE -->
-        <div class="table-responsive p-4">
-
-            <table class="table table-hover align-middle custom-table">
-
-                <thead>
+        <div class="table-responsive p-0" style="max-height: calc(100vh - 280px); overflow-y: auto; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+            <table class="table align-middle table-hover custom-table mb-0" style="position: relative;">
+                <thead style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                     <tr>
-                        <th>ID</th>
-                        <th>Ngày đặt</th>
-                        <th>Customer ID</th>
-                        <th>Trạng thái</th>
-                        <th>Ghi chú</th>
+                        <th style="width: 5%;" class="text-center">
+                            <input class="form-check-input" type="checkbox" id="selectAll" onclick="toggleAll(this)">
+                        </th>
+                        <th style="width: 10%;">ID</th>
+                        <th style="width: 15%;">Ngày đặt</th>
+                        <th style="width: 15%;">Customer ID</th>
+                        <th style="width: 15%;">Trạng thái</th>
+                        <th style="width: 30%;">Ghi chú</th>
+                        <th style="width: 10%;" class="text-center">Thao tác</th>
                     </tr>
                 </thead>
-
                 <tbody>
-
                     @if (Model != null && Model.Any())
                     {
                         foreach (var item in Model)
                         {
                             bool completed = item.Status == 1;
-
                             <tr>
-
-                                <td class="fw-bold text-muted">
-                                    #@item.Id
+                                <td class="text-center">
+                                    <input class="form-check-input order-checkbox" type="checkbox" value="@item.Id">
                                 </td>
-
+                                <td class="fw-bold text-muted">#@item.Id</td>
+                                <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                                <td>KH-@item.CustomerId</td>
                                 <td>
-                                    @item.OrderDate.ToString("dd/MM/yyyy")
+                                    @if(item.Status == 0) {
+                                        <span class="status-badge status-pending"><i class="fas fa-clock me-1"></i> Chờ duyệt</span>
+                                    } else if(item.Status == 1) {
+                                        <span class="status-badge status-info"><i class="fas fa-truck me-1"></i> Đang giao</span>
+                                    } else if(item.Status == 2) {
+                                        <span class="status-badge status-success"><i class="fas fa-check-circle me-1"></i> Hoàn thành</span>
+                                    } else if(item.Status == -1) {
+                                        <span class="status-badge status-danger"><i class="fas fa-ban me-1"></i> Đã hủy</span>
+                                    }
                                 </td>
-
-                                <td>
-                                    KH-@item.CustomerId
+                                <td><span class="d-inline-block text-truncate" style="max-width: 150px;">@item.Notes</span></td>
+                                <td class="text-center">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                        <i class="fas fa-eye me-1"></i> xem
+                                    </a>
                                 </td>
-
-                                <td>
-
-                                    <span class="status-badge @(completed ? "status-success" : "status-pending")">
-
-                                        <i class="fas @(completed ? "fa-circle-check" : "fa-clock") me-1"></i>
-
-                                        @(completed ? "Đã xác nhận" : "Chờ xử lý")
-
-                                    </span>
-
-                                </td>
-
-                                <td>
-                                    @item.Notes
-                                </td>
-
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-
-                            <td colspan="5"
-                                class="text-center py-5 text-muted">
-
-                                <i class="fas fa-cart-arrow-down fs-1 d-block mb-3"></i>
-
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="fas fa-cart-arrow-down fs-2 d-block mb-2"></i>
                                 Chưa có đơn hàng nào
-
                             </td>
-
                         </tr>
                     }
-
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
-
 </div>
 
 <style>
+    body { background: #f8f9fc; }
+    .customer-card { border-radius: 12px; overflow: hidden; background: white; }
+    .header-custom { background: linear-gradient(135deg, #4e73df, #224abe); padding: 1rem 1.5rem; }
+    .custom-table thead th { background: #f8f9fc; color: #4e73df; text-transform: uppercase; font-size: 12px; border-top: none; padding: 10px 15px; }
+    .custom-table tbody td { padding: 10px 15px; font-size: 14px; }
+    .custom-table tbody tr { transition: all 0.2s ease; }
+    .custom-table tbody tr:hover { background: #fcfdff; transform: scale(1.002); }
+    .status-badge { padding: 0.4em 0.8em; border-radius: 50px; font-size: 11px; font-weight: bold; display: inline-block; }
+    .status-success { background: #e8fff3; color: #1cc88a; }
+    .status-pending { background: #fff4e5; color: #f6c23e; }
+    .status-info { background: #e5f4ff; color: #36b9cc; }
+    .status-danger { background: #ffe5e5; color: #e74a3b; }
+</style>
 
-    body {
-        background: #f8f9fc;
-    }
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("filterForm");
+        const searchInput = document.getElementById("searchInput");
+        const filterSelect = document.getElementById("filterSelect");
+        let timeout = null;
 
-    .order-card {
-        border-radius: 18px;
-        overflow: hidden;
-        background: white;
-    }
-
-    .header-custom {
-        background: linear-gradient(135deg, #1cc88a, #169b6b);
-        padding: 1.5rem 2rem;
-    }
-
-    .custom-table thead th {
-        background: #f8f9fc;
-        color: #1cc88a;
-        text-transform: uppercase;
-        font-size: 13px;
-        border-top: none;
-    }
-
-    .status-badge {
-        padding: 0.5em 1em;
-        border-radius: 50px;
-        font-size: 12px;
-        font-weight: bold;
-        display: inline-block;
-    }
-
-    .status-success {
-        background: #e8fff3;
-        color: #1cc88a;
-    }
-
-    .status-pending {
-        background: #fff4e5;
-        color: #f6c23e;
-    }
-
-    .custom-table tbody tr {
-        transition: all 0.2s ease;
-    }
-
-        .custom-table tbody tr:hover {
-            background: #fcfffd;
-            transform: scale(1.002);
+        if (searchInput) {
+            searchInput.addEventListener("input", function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    form.submit();
+                }, 500);
+            });
+            const len = searchInput.value.length;
+            if (len > 0) {
+                searchInput.focus();
+                searchInput.setSelectionRange(len, len);
+            }
         }
 
-</style>
+        if (filterSelect) {
+            filterSelect.addEventListener("change", function () {
+                form.submit();
+            });
+        }
+    });
+
+    function toggleAll(source) {
+        const checkboxes = document.querySelectorAll('.order-checkbox');
+        checkboxes.forEach(cb => cb.checked = source.checked);
+    }
+
+    function printSelected(e) {
+        e.preventDefault();
+        const selectedIds = Array.from(document.querySelectorAll('.order-checkbox:checked')).map(cb => cb.value);
+        if (selectedIds.length === 0) {
+            alert("Vui lòng tick chọn ít nhất một đơn hàng để in.");
+            return;
+        }
+        
+        let url = '@Url.Action("BulkInvoice", "Order")?';
+        selectedIds.forEach((id, index) => {
+            url += `ids=${id}&`;
+        });
+        window.open(url, '_blank');
+    }
+
+    function printAll(e) {
+        e.preventDefault();
+        const searchString = document.getElementById("searchInput")?.value || "";
+        const status = document.getElementById("filterSelect")?.value || "";
+        
+        let url = '@Url.Action("BulkInvoice", "Order")?';
+        if (searchString) url += `searchString=${encodeURIComponent(searchString)}&`;
+        if (status) url += `status=${encodeURIComponent(status)}&`;
+        
+        window.open(url, '_blank');
+    }
+</script>

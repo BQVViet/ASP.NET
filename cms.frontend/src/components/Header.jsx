@@ -60,6 +60,9 @@ function Header() {
               </li>
 
               <li className="nav-item mx-3">
+                <Link className="nav-link text-dark" to="/blog">Tin Tức</Link>
+              </li>
+              <li className="nav-item mx-3">
                 <Link className="nav-link text-dark" to="/contact">Liên Hệ</Link>
               </li>
             </ul>
@@ -70,17 +73,20 @@ function Header() {
             {user ? (
               <Dropdown align="end" className="me-3">
                 <Dropdown.Toggle variant="link" id="dropdown-user" className="text-dark p-0 text-decoration-none d-flex align-items-center">
-                  <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style={{ width: '32px', height: '32px', fontSize: '0.8rem' }}>
-                    {user.name.charAt(0).toUpperCase()}
+                  <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm overflow-hidden" style={{ width: '32px', height: '32px', fontSize: '0.8rem' }}>
+                    {user.avatar ? (
+                      <img src={`https://localhost:7199${user.avatar}`} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      user.name.charAt(0).toUpperCase()
+                    )}
                   </div>
                 </Dropdown.Toggle>
                 <Dropdown.Menu className="shadow border-0 mt-2 rounded-3">
                   <Dropdown.ItemText className="fw-bold text-dark px-3 py-2 border-bottom">
-                    {user.name} <br/>
+                    {user.name} <br />
                     <span className="badge bg-secondary mt-1">{user.role}</span>
                   </Dropdown.ItemText>
                   <Dropdown.Item as={Link} to="/profile" className="py-2"><i className="fas fa-user-circle me-2 text-muted"></i> Tài khoản của tôi</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/orders" className="py-2"><i className="fas fa-box me-2 text-muted"></i> Đơn hàng</Dropdown.Item>
                   <Dropdown.Divider />
                   <Dropdown.Item onClick={logout} className="py-2 text-danger"><i className="fas fa-sign-out-alt me-2"></i> Đăng xuất</Dropdown.Item>
                 </Dropdown.Menu>
@@ -93,10 +99,10 @@ function Header() {
 
             {showSearch ? (
               <form onSubmit={handleSearchSubmit} className="d-flex align-items-center me-4 border rounded-pill px-3 py-1 bg-light shadow-sm" style={{ minWidth: '220px', transition: 'all 0.3s' }}>
-                <input 
-                  type="text" 
-                  className="form-control border-0 bg-transparent shadow-none p-0" 
-                  placeholder="Tìm kiếm..." 
+                <input
+                  type="text"
+                  className="form-control border-0 bg-transparent shadow-none p-0"
+                  placeholder="Tìm kiếm..."
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   autoFocus

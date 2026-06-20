@@ -5,39 +5,36 @@
     ViewData["Title"] = "Quản trị thành viên";
 }
 
-<div class="container-fluid px-0">
-    <div class="card border-0">
-        <div class="card-header bg-white border-0 pt-4 pb-0">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <div>
-                    <h3 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
-                        <i class="bi bi-people text-primary"></i>
-                        Quản Trị Thành Viên
-                    </h3>
-                    <p class="text-muted small mb-0">
-                        Quản lý phân quyền, theo dõi tài khoản và điều phối nhân sự trên hệ thống
-                    </p>
-                </div>
+<div class="container-fluid px-0 mt-4">
+    <div class="card shadow-sm border-0" style="border-radius: 16px; overflow: hidden;">
+        <!-- Solid Blue Header -->
+        <div class="card-header bg-primary text-white border-0 py-4 px-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <h2 class="mb-2 fw-bold text-white d-flex align-items-center gap-2 m-0" style="font-size: 1.8rem;">
+                    <i class="bi bi-people-fill"></i> Danh Sách Thành Viên
+                </h2>
+                <p class="mb-0" style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">
+                    Tổng cộng @(Model?.Count() ?? 0) thành viên
+                </p>
+            </div>
 
-                <div>
-                    <a asp-action="Create" class="btn btn-primary d-inline-flex align-items-center gap-2">
-                        <i class="bi bi-person-plus-fill"></i>
-                        Thêm thành viên mới
-                    </a>
-                </div>
+            <div>
+                <a asp-action="Create" class="btn btn-light rounded-pill px-4 py-2 fw-bold text-dark d-flex align-items-center gap-2 shadow-sm">
+                    <i class="bi bi-person-plus-fill"></i> Thêm thành viên
+                </a>
             </div>
         </div>
 
-        <div class="card-body px-0 pt-4">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle custom-modern-table">
+        <div class="card-body p-0">
+            <div class="table-responsive bg-white">
+                <table class="table table-hover align-middle custom-admin-table mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 10%;" class="text-center ps-4">ID</th>
-                            <th style="width: 30%;">Tài khoản</th>
-                            <th style="width: 25%;">Họ và tên</th>
-                            <th style="width: 20%;" class="text-center">Vai trò</th>
-                            <th style="width: 15%;" class="text-end pe-4">Thao tác</th>
+                            <th style="width: 10%;" class="ps-4 text-center">ID</th>
+                            <th style="width: 30%;">TÀI KHOẢN</th>
+                            <th style="width: 25%;">HỌ VÀ TÊN</th>
+                            <th style="width: 20%;" class="text-center">VAI TRÒ</th>
+                            <th style="width: 15%;" class="text-center pe-4">THAO TÁC</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,27 +50,21 @@
                                 (user.Role.Contains("Admin") || user.Role.Contains("Quản"));
 
                                 <tr>
-                                    <td class="text-center ps-4">
-                                        <span class="id-badge">
-                                            #@user.Id
-                                        </span>
+                                    <td class="ps-4 py-3 fw-bold text-secondary text-center">
+                                        #@user.Id
                                     </td>
 
                                     <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-circle-modern @(isAdmin ? "avatar-admin" : "avatar-user") me-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="avatar-circle">
                                                 @firstChar
                                             </div>
-                                            <div>
-                                                <span class="fw-semibold text-dark block-username">
-                                                    @user.UserName
-                                                </span>
-                                            </div>
+                                            <span class="text-dark fw-medium" style="font-size: 0.95rem;">@user.UserName</span>
                                         </div>
                                     </td>
 
                                     <td>
-                                        <span class="text-secondary fw-medium">
+                                        <span class="text-dark" style="font-size: 0.95rem;">
                                             @user.FullName
                                         </span>
                                     </td>
@@ -85,17 +76,17 @@
                                         </span>
                                     </td>
 
-                                    <td class="text-end pe-4">
-                                        <div class="d-inline-flex gap-2 justify-content-end">
+                                    <td class="text-center pe-4">
+                                        <div class="d-inline-flex gap-2 justify-content-center">
                                             <a asp-action="Edit" asp-route-id="@user.Id"
-                                               class="action-btn btn-edit" title="Chỉnh sửa tài khoản">
+                                               class="btn-action edit" title="Chỉnh sửa">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
 
                                             <a asp-action="Delete" asp-route-id="@user.Id"
-                                               class="action-btn btn-delete"
-                                               onclick="return confirm('Bạn có chắc chắn muốn xóa thành viên @user.UserName không?')" title="Xóa tài khoản">
-                                                <i class="bi bi-trash3"></i>
+                                               class="btn-action delete"
+                                               onclick="return confirm('Bạn có chắc chắn muốn xóa thành viên @user.UserName không?')" title="Xóa">
+                                                <i class="bi bi-trash"></i>
                                             </a>
                                         </div>
                                     </td>
@@ -106,9 +97,6 @@
                         {
                             <tr>
                                 <td colspan="5" class="text-center py-5">
-                                    <div class="text-muted opacity-50 mb-3">
-                                        <i class="bi bi-people-xs" style="font-size: 3.5rem;"></i>
-                                    </div>
                                     <p class="text-secondary fw-medium mb-0">
                                         Hệ thống chưa có tài khoản thành viên nào.
                                     </p>
@@ -119,89 +107,73 @@
                 </table>
             </div>
         </div>
-
-        <div class="card-footer bg-white border-top-0 py-3 d-flex justify-content-between align-items-center">
-            <span class="text-muted small fw-medium">
-                Tổng số nhân sự: <strong class="text-dark">@(Model?.Count() ?? 0)</strong> tài khoản liên kết
-            </span>
-        </div>
     </div>
 </div>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
 <style>
-    /* Đồng bộ màu nền nền tảng sáng */
     body {
         background: #f1f5f9 !important;
     }
 
-    /* Thiết kế phẳng cho Table */
-    .custom-modern-table {
+    /* Thiết lập cấu trúc Table giống ảnh */
+    .custom-admin-table {
         border: none !important;
-        margin-bottom: 0;
     }
 
-        .custom-modern-table thead {
-            background: #f8fafc !important;
+        .custom-admin-table thead {
+            background: #fafafa !important;
         }
 
-            .custom-modern-table thead th {
-                color: #64748b !important;
-                font-size: 12px !important;
-                font-weight: 600 !important;
+            .custom-admin-table thead th {
+                color: #4f46e5 !important;
+                font-size: 13px !important;
+                font-weight: 700 !important;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
-                padding: 16px 14px !important;
+                padding: 18px 14px !important;
                 border-bottom: 1px solid #e2e8f0 !important;
             }
 
-        .custom-modern-table tbody td {
-            padding: 14px 14px !important;
+        .custom-admin-table tbody td {
+            padding: 16px 14px !important;
             border-bottom: 1px solid #f1f5f9 !important;
-            color: #334155;
+            vertical-align: middle;
         }
 
-        .custom-modern-table tbody tr {
+        .custom-admin-table tbody tr {
             transition: background-color 0.2s ease;
         }
 
-            .custom-modern-table tbody tr:hover {
+            .custom-admin-table tbody tr:hover {
                 background-color: #f8fafc !important;
             }
 
-    /* ID Badge tối giản */
-    .id-badge {
-        background: #f1f5f9;
-        color: #64748b;
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    /* Thiết kế Avatar Chữ Đại Diện */
-    .avatar-circle-modern {
-        width: 40px;
-        height: 40px;
+    /* Avatar tròn nhỏ như ảnh */
+    .avatar-circle {
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
-        font-weight: 700;
-        font-size: 15px;
+        background: #e2e8f0;
+        color: #3b82f6;
         display: flex;
         align-items: center;
         justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
     }
 
-    /* Avatar cho Admin (Tone Indigo/Blue) */
-    .avatar-admin {
-        background: #e0e7ff;
-        color: #4f46e5;
-        border: 1px solid #c7d2fe;
+    /* Nút Thêm màu trắng */
+    .btn-light {
+        background-color: #ffffff;
+        border-color: #ffffff;
+        color: #0f172a;
     }
 
-    /* Avatar cho Editor/User (Tone Cyan/Teal) */
-    .avatar-user {
-        background: #ecfeff;
-        color: #0891b2;
-        border: 1px solid #c5f6fa;
+    .btn-light:hover {
+        background-color: #f8fafc;
+        color: #0f172a;
     }
 
     /* Modern Role Badge */
@@ -214,55 +186,56 @@
         align-items: center;
     }
 
-    /* Badge Admin bảo mật đỏ nhẹ nhàng */
     .role-admin {
         background: #fff5f5;
         color: #e53e3e;
         border: 1px solid #fed7d7;
     }
 
-    /* Badge Editor/User xanh dương tinh giản */
     .role-editor {
         background: #f0fdf4;
         color: #16a34a;
         border: 1px solid #dcfce7;
     }
 
-    /* Nút thao tác phẳng đồng bộ */
-    .action-btn {
-        width: 36px;
-        height: 36px;
+    /* Nút thao tác chuyên nghiệp Minimalist */
+    .btn-action {
+        width: 32px;
+        height: 32px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 10px;
-        text-decoration: none;
-        font-size: 16px;
+        border-radius: 8px;
+        background: transparent;
+        border: 1px solid transparent;
+        color: #94a3b8;
         transition: all 0.2s ease;
-        border: none;
+        font-size: 15px;
+        cursor: pointer;
+        text-decoration: none;
     }
 
-    /* Sửa */
-    .btn-edit {
+    .btn-action:hover {
+        background: #f8fafc;
+        border-color: #e2e8f0;
+        color: #0f172a;
+    }
+
+    .btn-action.view:hover {
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+        color: #16a34a;
+    }
+
+    .btn-action.edit:hover {
         background: #eff6ff;
+        border-color: #bfdbfe;
         color: #2563eb;
     }
 
-        .btn-edit:hover {
-            background: #2563eb;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-    /* Xóa */
-    .btn-delete {
+    .btn-action.delete:hover {
         background: #fef2f2;
-        color: #ef4444;
+        border-color: #fecaca;
+        color: #dc2626;
     }
-
-        .btn-delete:hover {
-            background: #ef4444;
-            color: white;
-            transform: translateY(-2px);
-        }
 </style>

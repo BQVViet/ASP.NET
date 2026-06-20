@@ -19,17 +19,9 @@ namespace CMS.Backend.Controllers
         }
 
         // =========================
-        // DANH S�CH B�I VI?T
+        // DANH SÁCH BÀI VI?T
         // =========================
-        public IActionResult Index()
-        {
-            var posts = _context.Posts
-                .Include(p => p.Category)
-                .OrderByDescending(p => p.CreatedDate)
-                .ToList();
-
-            return View(posts);
-        }
+        public IActionResult Index(string searchString, int? categoryId) { var query = _context.Posts.Include(p => p.Category).AsQueryable(); if (!string.IsNullOrEmpty(searchString)) { query = query.Where(p => p.Title.Contains(searchString)); } if (categoryId.HasValue) { query = query.Where(p => p.CategoryId == categoryId.Value); } ViewBag.SearchString = searchString; ViewBag.CategoryId = categoryId; ViewBag.CategoryList = new SelectList(_context.Categories, "Id", "Name", categoryId); var posts = query.OrderByDescending(p => p.Id).ToList(); return View(posts); }
 
         // =========================
         // CHI TI?T
@@ -179,12 +171,12 @@ namespace CMS.Backend.Controllers
             }
             else
             {
-                // gi? ?nh cu
+                // giữ ảnh cũ NẾU người dùng không dán link ảnh mới
                 var oldPost = _context.Posts
                     .AsNoTracking()
                     .FirstOrDefault(p => p.Id == model.Id);
 
-                if (oldPost != null)
+                if (oldPost != null && string.IsNullOrEmpty(model.ImageUrl))
                 {
                     model.ImageUrl = oldPost.ImageUrl;
                 }
@@ -197,3 +189,5 @@ namespace CMS.Backend.Controllers
         }
     }
 }
+
+

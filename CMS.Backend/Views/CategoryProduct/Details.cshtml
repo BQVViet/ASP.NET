@@ -1,0 +1,32 @@
+﻿@model CMS.Data.Entities.CategoryProduct
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Chi Tiết Danh Mục Sản Phẩm";
+}
+
+<div class="container mt-5">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-header bg-white border-0 pt-4 pb-0">
+            <h3 class="fw-bold text-uppercase">Chi Tiết Danh Mục</h3>
+        </div>
+        <div class="card-body p-4">
+            <div class="mb-3">
+                <label class="form-label fw-bold">ID:</label>
+                <p class="form-control-plaintext">@Model.Id</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Tên danh mục:</label>
+                <p class="form-control-plaintext">@Model.Name</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Mô tả:</label>
+                <p class="form-control-plaintext">@(string.IsNullOrEmpty(Model.Description) ? "Không có mô tả" : Model.Description)</p>
+            </div>
+            <div class="mt-4">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning px-4 rounded-pill text-white">Sửa danh mục</a>
+                <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-pill ms-2">Quay lại</a>
+            </div>
+        </div>
+    </div>
+</div>
+

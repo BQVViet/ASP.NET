@@ -1,114 +1,64 @@
-﻿@model CMS.Data.Entities.User
+@model CMS.Data.Entities.User
 
 @{
     Layout = "_LayoutAdmin";
     ViewData["Title"] = "Cập nhật thành viên";
 }
 
-<div class="container mt-4">
-
-    <div class="card shadow">
-
-        <div class="card-header bg-warning">
-
-            <h5 class="mb-0">
-                CẬP NHẬT THÀNH VIÊN
-            </h5>
-
+<div class="container mt-4 mb-5">
+    <div class="card shadow-sm border-0 rounded-4">
+        
+        <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold text-dark"><i class="fas fa-user-edit me-2 text-primary"></i> CẬP NHẬT THÀNH VIÊN</h6>
+            <a asp-action="Index" class="btn btn-light btn-sm rounded-pill fw-medium text-secondary border shadow-sm px-3">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại
+            </a>
         </div>
 
-        <div class="card-body">
-
-            <form asp-action="Edit" method="post">
-
+        <div class="card-body p-4 p-md-5">
+            <form asp-action="Edit" method="post" id="editForm">
                 <input type="hidden" asp-for="Id" />
 
-                <div class="row mb-3">
-
+                <div class="row g-4 mb-4">
                     <div class="col-md-6">
-
-                        <label class="fw-bold">
-                            Username
-                        </label>
-
-                        <input asp-for="UserName"
-                               class="form-control"
-                               readonly />
-
+                        <label class="form-label fw-medium text-secondary" style="font-size: 13px;">Username <span class="text-danger">*</span></label>
+                        <input asp-for="UserName" class="form-control form-control-sm bg-light" readonly />
                     </div>
 
                     <div class="col-md-6">
-
-                        <label class="fw-bold">
-                            Mật khẩu mới
-                        </label>
-
-                        <input type="password"
-                               name="NewPassword"
-                               class="form-control"
-                               placeholder="Để trống nếu không đổi" />
-
-                    </div>
-
-                </div>
-
-                <div class="row mb-3">
-
-                    <div class="col-md-6">
-
-                        <label class="fw-bold">
-                            Họ tên
-                        </label>
-
-                        <input asp-for="FullName"
-                               class="form-control" />
-
+                        <label class="form-label fw-medium text-secondary" style="font-size: 13px;">Mật khẩu mới</label>
+                        <input type="password" name="NewPassword" class="form-control form-control-sm" placeholder="Để trống nếu không muốn đổi mật khẩu" />
                     </div>
 
                     <div class="col-md-6">
+                        <label class="form-label fw-medium text-secondary" style="font-size: 13px;">Họ và tên <span class="text-danger">*</span></label>
+                        <input asp-for="FullName" class="form-control form-control-sm" required />
+                    </div>
 
-                        <label class="fw-bold">
-                            Vai trò
-                        </label>
-
-                        <select asp-for="Role"
-                                class="form-select">
-
-                            <option value="Admin">
-                                Admin
-                            </option>
-
-                            <option value="Editor">
-                                Editor
-                            </option>
-                            <option value="User">
-                                User
-                            </option>
-
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium text-secondary" style="font-size: 13px;">Vai trò hệ thống <span class="text-danger">*</span></label>
+                        <select asp-for="Role" class="form-select form-select-sm" required>
+                            <option value="Admin">Admin</option>
+                            <option value="Editor">Editor</option>
+                            <option value="User">User</option>
                         </select>
-
                     </div>
-
                 </div>
-
-                <button type="submit"
-                        class="btn btn-primary">
-
-                    Cập nhật
-
-                </button>
-
-                <a asp-action="Index"
-                   class="btn btn-secondary">
-
-                    Quay lại
-
-                </a>
-
             </form>
-
         </div>
 
+        <div class="card-footer bg-light border-top py-3 px-4 d-flex justify-content-end gap-2">
+            <a asp-action="Index" class="btn btn-light rounded-pill fw-medium border px-4 shadow-sm text-secondary">
+                Hủy bỏ
+            </a>
+            <button type="button" onclick="document.getElementById('editForm').submit();" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
+                <i class="fas fa-save me-1"></i> Lưu thay đổi
+            </button>
+        </div>
     </div>
-
 </div>
+
+<style>
+    body { background: #f8fafc; }
+    .form-control-sm { padding: 0.5rem 0.75rem; font-size: 14px; border-radius: 6px; }
+</style>

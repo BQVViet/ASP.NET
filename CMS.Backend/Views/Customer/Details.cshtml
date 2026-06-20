@@ -1,0 +1,125 @@
+@model CMS.Data.Entities.Customer
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Chi tiết Khách hàng";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        
+        <!-- Header -->
+        <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold text-primary"><i class="fas fa-user-circle me-2"></i> THÔNG TIN KHÁCH HÀNG</h6>
+            <a asp-action="Index" class="btn btn-light btn-sm rounded-pill fw-medium text-secondary border shadow-sm px-3">
+                <i class="fas fa-arrow-left me-1"></i> Trở về
+            </a>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body p-4 p-md-5">
+            
+            <div class="row g-5">
+                
+                <!-- Left: Avatar & Basic Info -->
+                <div class="col-md-4 text-center border-end">
+                    @{
+                        var avatarStr = !string.IsNullOrEmpty(Model.FullName) ? Model.FullName.Substring(0, 1).ToUpper() : "?";
+                    }
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle shadow-sm mb-3" 
+                         style="width: 100px; height: 100px; font-size: 40px; font-weight: bold;">
+                        @avatarStr
+                    </div>
+                    <h4 class="fw-bold text-dark mb-1">@Model.FullName</h4>
+                    <p class="text-muted mb-3"><i class="fas fa-envelope me-1"></i> @Model.Email</p>
+
+                    <div class="d-flex justify-content-center gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm rounded-pill px-3 text-white fw-medium shadow-sm">
+                            <i class="fas fa-edit me-1"></i> Chỉnh sửa
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right: Details & Stats -->
+                <div class="col-md-8">
+                    <h6 class="fw-bold text-secondary mb-3 border-bottom pb-2 text-uppercase" style="font-size: 13px; letter-spacing: 0.5px;">Chi tiết liên hệ</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <small class="text-muted d-block mb-1">Số điện thoại</small>
+                                <span class="fw-semibold text-dark">@(string.IsNullOrEmpty(Model.Phone) ? "Chưa cung cấp" : Model.Phone)</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <small class="text-muted d-block mb-1">Giới tính</small>
+                                <span class="fw-semibold text-dark">@(string.IsNullOrEmpty(Model.Gender) ? "Chưa cung cấp" : Model.Gender)</span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <small class="text-muted d-block mb-1">Địa chỉ</small>
+                                <span class="fw-semibold text-dark">@(string.IsNullOrEmpty(Model.Address) ? "Chưa cung cấp" : Model.Address)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold text-secondary mb-3 border-bottom pb-2 text-uppercase" style="font-size: 13px; letter-spacing: 0.5px;">Lịch sử mua hàng</h6>
+                    @if (Model.Orders != null && Model.Orders.Any())
+                    {
+                        <div class="table-responsive border rounded-3 overflow-hidden">
+                            <table class="table table-hover align-middle mb-0" style="font-size: 14px;">
+                                <thead class="bg-light text-muted">
+                                    <tr>
+                                        <th class="fw-medium ps-3">Mã Đơn</th>
+                                        <th class="fw-medium">Ngày mua</th>
+                                        <th class="fw-medium">Tổng tiền</th>
+                                        <th class="fw-medium">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderDate))
+                                    {
+                                        var total = order.OrderDetails?.Sum(od => od.Quantity * od.UnitPrice) ?? 0;
+                                        <tr>
+                                            <td class="ps-3 fw-bold text-secondary">#ORD-@order.Id</td>
+                                            <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td class="fw-bold text-danger">@total.ToString("N0") ₫</td>
+                                            <td>
+                                                @if (order.Status == 0)
+                                                {
+                                                    <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                                                }
+                                                else if (order.Status == 1)
+                                                {
+                                                    <span class="badge bg-info">Đang giao</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">Đã xong</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="p-4 bg-light rounded-3 text-center border">
+                            <i class="fas fa-shopping-bag fs-3 text-muted mb-2 d-block"></i>
+                            <span class="text-muted">Khách hàng chưa có đơn hàng nào.</span>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    body { background: #f8fafc; }
+</style>

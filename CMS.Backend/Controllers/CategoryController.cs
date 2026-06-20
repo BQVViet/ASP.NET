@@ -1,4 +1,4 @@
-﻿using CMS.Data;
+using CMS.Data;
 using CMS.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +20,21 @@ namespace CMS.Backend.Controllers
         // =========================
         // DANH SÁCH CATEGORY
         // =========================
-        public IActionResult Index()
+        public IActionResult Index(string searchString, int page = 1)
         {
-            // Lấy dữ liệu thật từ SQL Server
-            var list = _context.Categories.ToList();
+            int pageSize = 10;
+            var query = _context.Categories.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(c => c.Name.Contains(searchString));
+            }
+
+            ViewBag.SearchString = searchString;
+
+            var list = query
+                .OrderByDescending(c => c.Id)
+                .ToList();
 
             return View(list);
         }

@@ -16,14 +16,14 @@ function ProductCard({ product }) {
               src={product.imageUrl} 
               alt={product.name} 
               className="img-fluid transition-hover" 
-              style={{ maxHeight: '140px', objectFit: 'contain', mixBlendMode: 'multiply', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.1))' }} 
+              style={{ maxHeight: '140px', objectFit: 'contain', mixBlendMode: 'darken' }} 
             />
           ) : (
             <img 
               src="/smartwatch_hero.png" 
               alt="Default Product" 
               className="img-fluid transition-hover" 
-              style={{ maxHeight: '140px', objectFit: 'contain', mixBlendMode: 'multiply', filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.1))', opacity: 0.5 }} 
+              style={{ maxHeight: '140px', objectFit: 'contain', mixBlendMode: 'darken', opacity: 0.5 }} 
             />
           )}
         </Link>

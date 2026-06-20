@@ -4,40 +4,31 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 using CMS.Data;
-using CMS.Data.Entities; // –?m b?o namespace n‡y ch?a th?c th? Order th?c t? c?a b?n
+using CMS.Data.Entities;
+using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
-    // 1. –?nh nghia du?ng d?n g?i API. Th?c t? s? l‡: https://localhost:xxxx/api/orders
     [Route("api/[controller]")]
-
-    // 2. KÌch ho?t tÌnh nang t? d?ng ki?m tra d? li?u d?u v‡o (Model Validation)
     [ApiController]
-
-    // 3. K? th?a ControllerBase d? t?i uu cho c?u tr˙c Web API
     public class OrdersController : ControllerBase
     {
-        // 4. Khai b·o th?c th? k?t n?i Co s? d? li?u (Read-only)
         private readonly ApplicationDbContext _context;
 
-        // 5. H‡m kh?i t?o: Inject DBContext t? h? th?ng v‡o Controller
         public OrdersController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // =================================================================
-        // 1. GET: api/orders (L?y danh s·ch don h‡ng kËm thÙng tin kh·ch h‡ng)
-        // URL th? nghi?m: GET https://localhost:xxxx/api/orders
-        // =================================================================
         [HttpGet]
         public async Task<IActionResult> GetOrders()
         {
             try
             {
-                // S? d?ng Include d? l?y kËm thÙng tin Kh·ch h‡ng (Customer) d?t don dÛ
                 var orders = await _context.Orders
                     .Include(o => o.Customer)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(d => d.Product)
                     .AsNoTracking()
                     .ToListAsync();
 
@@ -45,33 +36,27 @@ namespace CMS.Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"L?i h? th?ng: {ex.Message}");
+                return StatusCode(500, $"L·ªói h·ªá th·ªëng: {ex.Message}");
             }
         }
 
-        // =================================================================
-        // 2. GET: api/orders/{id} (L?y chi ti?t m?t don h‡ng theo ID)
-        // URL th? nghi?m: GET https://localhost:xxxx/api/orders/5
-        // =================================================================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrderById(int id)
         {
             var order = await _context.Orders
                 .Include(o => o.Customer)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(d => d.Product)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
             {
-                return NotFound(new { message = $"KhÙng tÏm th?y don h‡ng cÛ ID = {id}" });
+                return NotFound(new { message = $"Kh√¥ng t√¨m th·∫•y ƒë∆°n h√†ng c√≥ ID = {id}" });
             }
 
             return Ok(order);
         }
 
-        // =================================================================
-        // 3. POST: api/orders (T?o m?i m?t don h‡ng)
-        // URL th? nghi?m: POST https://localhost:xxxx/api/orders (D? li?u trong Body)
-        // =================================================================
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] Order order)
         {
@@ -80,7 +65,6 @@ namespace CMS.Backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            // T? d?ng ghi nh?n th?i gian d?t h‡ng n?u phÌa Client khÙng truy?n lÍn
             if (order.OrderDate == default)
             {
                 order.OrderDate = DateTime.Now;
@@ -92,16 +76,12 @@ namespace CMS.Backend.Controllers
             return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
         }
 
-        // =================================================================
-        // 4. PUT: api/orders/{id} (C?p nh?t tr?ng th·i / thÙng tin don h‡ng)
-        // URL th? nghi?m: PUT https://localhost:xxxx/api/orders/5
-        // =================================================================
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrder(int id, [FromBody] Order order)
         {
             if (id != order.Id)
             {
-                return BadRequest(new { message = "ID du?ng d?n v‡ ID d? li?u truy?n lÍn khÙng kh?p" });
+                return BadRequest(new { message = "ID ƒë∆∞·ªùng d·∫´n v√† ID d·ªØ li·ªáu truy·ªÅn l√™n kh√¥ng kh·ªõp" });
             }
 
             if (!ModelState.IsValid)
@@ -119,7 +99,7 @@ namespace CMS.Backend.Controllers
             {
                 if (!_context.Orders.Any(e => e.Id == id))
                 {
-                    return NotFound(new { message = "–on h‡ng khÙng t?n t?i trÍn h? th?ng d? c?p nh?t" });
+                    return NotFound(new { message = "ƒê∆°n h√†ng kh√¥ng t·ªìn t·∫°i tr√™n h·ªá th·ªëng ƒë·ªÉ c·∫≠p nh·∫≠t" });
                 }
                 throw;
             }
@@ -127,27 +107,19 @@ namespace CMS.Backend.Controllers
             return NoContent();
         }
 
-        // =================================================================
-        // 5. DELETE: api/orders/{id} (XÛa don h‡ng)
-        // URL th? nghi?m: DELETE https://localhost:xxxx/api/orders/5
-        // =================================================================
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             var order = await _context.Orders.FindAsync(id);
             if (order == null)
             {
-                return NotFound(new { message = "–on h‡ng d„ b? xÛa tru?c dÛ ho?c khÙng t?n t?i" });
+                return NotFound(new { message = "ƒê∆°n h√†ng ƒë√£ b·ªã x√≥a tr∆∞·ªõc ƒë√≥ ho·∫∑c kh√¥ng t·ªìn t·∫°i" });
             }
 
-            // Luu ˝: –on h‡ng n‡y thu?ng cÛ r‡ng bu?c khÛa ngo?i ch?t ch? v?i b?ng OrderDetails.
-            // N?u b?n mu?n xÛa don h‡ng, b?n c?n c?u hÏnh xÛa Cascade trong DB 
-            // ho?c ch? d?ng xÛa c·c b?n ghi liÍn quan trong b?ng OrderDetails tru?c.
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "XÛa don h‡ng th‡nh cÙng" });
+            return Ok(new { message = "X√≥a ƒë∆°n h√†ng th√†nh c√¥ng" });
         }
     }
 }
-

@@ -132,7 +132,7 @@ a:hover {
 
 /* Gray circle wrapper for images */
 .img-wrapper {
-  background-color: var(--gray-bg);
+  background-color: var(--white);
   border-radius: 50%;
   width: 200px;
   height: 200px;
